@@ -27,9 +27,6 @@ Adafruit_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, RX);
 
-volatile static uint16_t framecount;
-const uint8_t refreshFrames PROGMEM = 100;
-
 Screens currentScreen;  // acá guardo la pantalla activa
 Screens prevScreen;     // acá guardo la pantalla anterior
 
@@ -65,43 +62,13 @@ void taskTouchscreenMenu(void* pvParameters) {
   while (1) {
     TSPoint p = ts.getPoint();
 
-    // if sharing pins, you'll need to fix the directions of the touchscreen
-    // pins pinMode(XP, OUTPUT);
-    // pinMode(XM, OUTPUT);
-    // pinMode(YP, OUTPUT);
-    // pinMode(YM, OUTPUT);
-
-    // si la pantalla está siendo presionada se mappea el resultado de
-    // getPoint() a un punto valido del cursor en la pantalla - no es necesario
-    // refrescar la pantalla si no cambió nada ni está siendo presionada
     if (p.z > MINPRESSURE) {
-      // scale from 0->1023 to tft.width
-
-      DEBUG_PRINT(F("Unmapped p: "));
-      DEBUG_PRINT(F("("));
-      DEBUG_PRINT(p.x);
-      DEBUG_PRINT(F(", "));
-      DEBUG_PRINT(p.y);
-      DEBUG_PRINT(F(", "));
-      DEBUG_PRINT(p.z);
-      DEBUG_PRINT(F(") "));
-
       // el modulo tactil tiene 60 puntos no dibujables en la pantalla
       TSPoint pointTemp = p;
       p.y = map(pointTemp.x, TS_MINX, TS_MAXX, tft.height(), 0);
-      p.x = map(pointTemp.y, TS_MINY, TS_MAXY, 0, tft.width());
-
-      DEBUG_PRINT(F("Mapped p: "));
-      DEBUG_PRINT(F("("));
-      DEBUG_PRINT(p.x);
-      DEBUG_PRINT(F(", "));
-      DEBUG_PRINT(p.y);
-      DEBUG_PRINT(F(", "));
-      DEBUG_PRINT(p.z);
-      DEBUG_PRINTLN(F(") "));
+      p.x = map(pointTemp.y, TS_MINY, TS_MAXY - 60, 0, tft.width());
 
       if (currentScreen != Screens::screensHome && (p.y < -1)) {
-        // HomeScreen();
       }
 
       switch (currentScreen) {}
