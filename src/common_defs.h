@@ -27,6 +27,6 @@
 #define BUTTON_TEXTSIZE 3
 #define TITLE_TEXTSIZE 2
 
-enum class Screens { screensHome };
+enum class Screens { Home, SD, Calibration };
 
 #endif
