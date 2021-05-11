@@ -6,8 +6,9 @@
 #ifdef DEBUG_ENABLED
 #define DEBUG_BEGIN(x) Serial.begin(x)
 #define DEBUG_PRINT(x) Serial.print(x)
-#define DEBUG_PRINTDEC(x) Serial.print(x, DEC)
 #define DEBUG_PRINTLN(x) Serial.println(x)
+#define DEBUG_PRINTDEC(x) Serial.print(x, DEC)
+#define DEBUG_PRINTLNDEC(x) Serial.println(x, DEC)
 #else
 #define DEBUG_BEGIN(x)
 #define DEBUG_PRINT(x)
@@ -16,6 +17,8 @@
 #endif
 
 #include "Arduino_FreeRTOS.h"
+#include "SD.h"
+#include "SPI.h"
 //#include "calibrate/calibrate.h"
 #include "common_defs.h"
 #include "draw_screens.h"
@@ -28,19 +31,24 @@ Adafruit_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, RX);
 
+File root;
+
 Adafruit_GFX_Button buttonsHome[3];
 Adafruit_GFX_Button buttonsSD[2];
 Adafruit_GFX_Button buttonsConfig[2];
 
 uint8_t currentFile = 0xff;
 static uint8_t selectedFile = 0xff;
+char files[5][20];
+uint8_t filecount;
 
 Screens currentScreen;  // acá guardo la pantalla activa
 Screens prevScreen;     // acá guardo la pantalla anterior
 
 void taskTouchscreenMenu(void* pvParameters);
-int8_t SD_filecount(uint8_t* filecount, char* filenames[]);
-int8_t SD_getFileName(char** buffer, uint8_t fn);
+int8_t SD_filecount(File dir, uint8_t* filecount, char* filenames[]);
+int8_t SD_getFileName(File dir, uint8_t fnum, char* buffer);
+int8_t SD_getFileCount(File dir, uint8_t* fnum);
 
 void setup() {
   Serial.begin(115200);
@@ -49,6 +57,28 @@ void setup() {
 
   DEBUG_PRINT(F("v"));
   DEBUG_PRINTLN(F(VERSION));
+
+  if (!SD.begin(10)) {
+    DEBUG_PRINTLN(F("sd initialization failed"));
+    while (1)
+      ;
+  }
+
+  root = SD.open("/");
+
+  SD_getFileCount(root, &filecount);
+  DEBUG_PRINT("file count: ");
+  DEBUG_PRINTLN(filecount);
+  for (uint8_t i = 0; i < filecount; i++) {
+    SD_getFileName(root, i, files[i]);
+  }
+
+  DEBUG_PRINT("file 1: ");
+  DEBUG_PRINTLN(files[0]);
+  DEBUG_PRINT("file 2: ");
+  DEBUG_PRINTLN(files[1]);
+  DEBUG_PRINT("file 3: ");
+  DEBUG_PRINTLN(files[2]);
 
   xTaskCreate(taskTouchscreenMenu, "Touchscreen_Menu",
               configMINIMAL_STACK_SIZE * 2, NULL, 1, NULL);
@@ -80,42 +110,23 @@ void taskTouchscreenMenu(void* pvParameters) {
       pinMode(XM, OUTPUT);
       pinMode(YP, OUTPUT);
 
-      DEBUG_PRINT(F("Unmapped p: "));
-      DEBUG_PRINT(F("("));
-      DEBUG_PRINT(p.x);
-      DEBUG_PRINT(F(", "));
-      DEBUG_PRINT(p.y);
-      DEBUG_PRINT(F(", "));
-      DEBUG_PRINT(p.z);
-      DEBUG_PRINT(F(") "));
-
       p.y = map(pointTemp.x, TS_MINX, TS_MAXX, tft.height(), 0);
       p.x = map(pointTemp.y, TS_MINY, TS_MAXY - 60, 0, tft.width());
 
-      DEBUG_PRINT(F("Mapped p: "));
-      DEBUG_PRINT(F("("));
-      DEBUG_PRINT(p.x);
-      DEBUG_PRINT(F(", "));
-      DEBUG_PRINT(p.y);
-      DEBUG_PRINT(F(", "));
-      DEBUG_PRINT(p.z);
-      DEBUG_PRINTLN(F(") "));
-
       if (currentScreen != Screens::Home && (p.x > 320)) {
-        char* buffer;
-        SD_getFileName(&buffer, currentFile);
         currentScreen = Screens::Home;
-        drawHomeScreen(&tft, buttonsHome, buffer);
+        if (currentFile >= filecount) {
+          drawHomeScreen(&tft, buttonsHome, NULL);
+        } else {
+          drawHomeScreen(&tft, buttonsHome, files[currentFile]);
+        }
       }
 
       switch (currentScreen) {
         case Screens::Home: {
           if (buttonsHome[0].contains(p.x, p.y)) {
-            uint8_t fc;
-            static char* fn[20];
-            SD_filecount(&fc, fn);
             currentScreen = Screens::SD;
-            drawSDScreen(&tft, buttonsSD, fc, fn);
+            drawSDScreen(&tft, buttonsSD, filecount, files);
 
             if (currentFile != 0xff) {
               tft.fillCircle(300, 42 + 28 * currentFile, 5, WHITE);
@@ -131,28 +142,29 @@ void taskTouchscreenMenu(void* pvParameters) {
                                   "Aceptar", 3);
 
           static bool confirmButton = 0;
-          uint8_t fc;
-          static char* fn[20];
-          SD_filecount(&fc, fn);
 
           if (buttonsSD[0].contains(p.x, p.y)) {
             confirmButton = 0;
             selectedFile = currentFile;
 
             currentScreen = Screens::Home;
-            char* currentFileName;
-            SD_getFileName(&currentFileName, currentFile);
-            drawHomeScreen(&tft, buttonsHome, currentFileName);
+            if (currentFile >= filecount) {
+              drawHomeScreen(&tft, buttonsHome, NULL);
+            } else {
+              drawHomeScreen(&tft, buttonsHome, files[currentFile]);
+            }
           } else if (buttonsSD[1].contains(p.x, p.y)) {
             confirmButton = 0;
             currentFile = selectedFile;
 
-            char* currentFileName;
-            SD_getFileName(&currentFileName, currentFile);
             currentScreen = Screens::Home;
-            drawHomeScreen(&tft, buttonsHome, currentFileName);
+            if (currentFile >= filecount) {
+              drawHomeScreen(&tft, buttonsHome, NULL);
+            } else {
+              drawHomeScreen(&tft, buttonsHome, files[currentFile]);
+            }
 
-          } else if (fc > 0 &&
+          } else if (filecount > 0 &&
                      (p.x >= 5 && p.x <= 315 && p.y >= 28 && p.y <= 56) &&
                      (selectedFile != 0)) {
             tft.fillCircle(300, 42, 5, WHITE);
@@ -164,7 +176,7 @@ void taskTouchscreenMenu(void* pvParameters) {
               confirmButton = 1;
             }
             selectedFile = 0;
-          } else if (fc > 1 &&
+          } else if (filecount > 1 &&
                      (p.x >= 5 && p.x <= 315 && p.y >= 56 && p.y <= 84) &&
                      (selectedFile != 1)) {
             tft.fillCircle(300, 42, 5, BLACK);
@@ -177,7 +189,7 @@ void taskTouchscreenMenu(void* pvParameters) {
             }
 
             selectedFile = 1;
-          } else if (fc > 2 &&
+          } else if (filecount > 2 &&
                      (p.x >= 5 && p.x <= 315 && p.y >= 84 && p.y <= 112) &&
                      (selectedFile != 2)) {
             tft.fillCircle(300, 42, 5, BLACK);
@@ -190,7 +202,7 @@ void taskTouchscreenMenu(void* pvParameters) {
             }
 
             selectedFile = 2;
-          } else if (fc > 3 &&
+          } else if (filecount > 3 &&
                      (p.x >= 5 && p.x <= 315 && p.y >= 112 && p.y <= 140) &&
                      (selectedFile != 3)) {
             tft.fillCircle(300, 42, 5, BLACK);
@@ -211,10 +223,12 @@ void taskTouchscreenMenu(void* pvParameters) {
             currentScreen = Screens::Calibration;
             drawCalibrationScreen(&tft);
           } else if (buttonsConfig[1].contains(p.x, p.y)) {
-            char* currentFileName;
-            SD_getFileName(&currentFileName, currentFile);
             currentScreen = Screens::Home;
-            drawHomeScreen(&tft, buttonsHome, currentFileName);
+            if (currentFile >= filecount) {
+              drawHomeScreen(&tft, buttonsHome, NULL);
+            } else {
+              drawHomeScreen(&tft, buttonsHome, files[currentFile]);
+            }
           }
           break;
         }
@@ -246,36 +260,87 @@ void taskTouchscreenMenu(void* pvParameters) {
   }
 }
 
-int8_t SD_filecount(uint8_t* filecount, char* filenames[]) {
-  *filecount = 4;
-  filenames[0] = "aaa.gcode";
-  filenames[1] = "bbb.gcode";
-  filenames[2] = "ccc.gcode";
-  filenames[3] = "ddd.gcode";
-  return 0;
-}
+int8_t SD_filecount(File dir, uint8_t* filecount, char* filenames[]) {
+  if (!dir || !filecount || !filenames) {
+    return -1;
+    DEBUG_PRINTLN("filecount error");
+  }
 
-int8_t SD_getFileName(char** buffer, uint8_t fn) {
-  switch (fn) {
-    case 0: {
-      *buffer = "aaa.gcode";
-      break;
+  uint8_t i = 0;
+  while (1) {
+    File f = dir.openNextFile();
+
+    if (!f) {
+      // no more files
+      *filecount = i;
+      dir.rewindDirectory();
+      return 0;
     }
-    case 1: {
-      *buffer = "bbb.gcode";
-      break;
-    }
-    case 2: {
-      *buffer = "ccc.gcode";
-      break;
-    }
-    case 3: {
-      *buffer = "ddd.gcode";
-      break;
-    }
-    default: {
-      *buffer = "";
+    if (strcmp(f.name(), "SYSTEM~1")) {
+      DEBUG_PRINT(i);
+      DEBUG_PRINT(".\t");
+
+      DEBUG_PRINT(f.name());
+      strcpy(filenames[i], f.name());
+      // filenames[i] = f.name();
+
+      DEBUG_PRINT("\t\t");
+      DEBUG_PRINTLNDEC(f.size());
+      DEBUG_PRINTLN(filenames[i]);
+      i++;
     }
   }
-  return 0;
+  return -1;
+}
+
+int8_t SD_getFileName(File dir, uint8_t fnum, char* buffer) {
+  if (!dir || !buffer) {
+    return -1;
+    DEBUG_PRINTLN("filecount error");
+  }
+
+  uint8_t i = 0;
+  while (1) {
+    File f = dir.openNextFile();
+
+    if (!f) {
+      // no more files - file not found
+      dir.rewindDirectory();
+      DEBUG_PRINTLN("file not found");
+      return 1;
+    }
+    if (strcmp(f.name(), "SYSTEM~1")) {
+      if (i == fnum) {
+        strcpy(buffer, f.name());
+
+        dir.rewindDirectory();
+        return 0;
+      }
+      i++;
+    }
+  }
+  return -1;
+}
+
+int8_t SD_getFileCount(File dir, uint8_t* fnum) {
+  if (!dir || !fnum) {
+    return -1;
+    DEBUG_PRINTLN("filecount error");
+  }
+
+  uint8_t i = 0;
+  while (1) {
+    File f = dir.openNextFile();
+
+    if (!f) {
+      // no more files - file not found
+      dir.rewindDirectory();
+      *fnum = i;
+      return 0;
+    }
+    if (strcmp(f.name(), "SYSTEM~1")) {
+      i++;
+    }
+  }
+  return -1;
 }

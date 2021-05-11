@@ -34,7 +34,7 @@ void drawHomeScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
 }
 
 void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
-                  uint8_t filecount, char** filenames) {
+                  uint8_t filecount, char (*filenames)[20]) {
   tft->fillScreen(BLACK);
 
   tft->setTextSize(2);
