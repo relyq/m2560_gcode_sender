@@ -11,6 +11,8 @@ solo se puede sacar la SD con el programa apagado
 
 debería plantearme hacer un archivo para cada task por cuestión de orden
 
+por qué drawSDScreen() funciona con char (*filenames)[20]? tengo otra forma de hacer que acepte como parametro un char filenames[][]?
+
 <s>el programa no debería pasar de setup() si no se encuentra pantalla o tarjeta sd</s>
 
 <s>debería guardar la lista de archivos al principio del programa en vez de contarlos cada vez que lo necesito</s>
