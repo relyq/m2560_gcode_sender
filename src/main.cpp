@@ -6,6 +6,8 @@
 #include "DEBUG_things.h"
 #include "SD.h"
 #include "SPI.h"
+#include "queue.h"
+#include "task.h"
 //#include "calibrate/calibrate.h"
 #include "SD_things.h"
 #include "common_defs.h"
@@ -34,7 +36,12 @@ uint8_t filecount;
 Screens currentScreen;  // acá guardo la pantalla activa
 Screens prevScreen;     // acá guardo la pantalla anterior
 
+QueueHandle_t qGcodeLine;
+
+TaskHandle_t xTouchscreenHandle;
+
 void taskTouchscreenMenu(void* pvParameters);
+void taskSendGcodeLine(void* pvParameters);
 
 void setup() {
   Serial.begin(115200);
@@ -66,11 +73,27 @@ void setup() {
   DEBUG_PRINT("file 3: ");
   DEBUG_PRINTLN(files[2]);
 
+  qGcodeLine = xQueueCreate(1, 128);
+
   xTaskCreate(taskTouchscreenMenu, "Touchscreen_Menu",
+              configMINIMAL_STACK_SIZE * 2, NULL, 1, &xTouchscreenHandle);
+  xTaskCreate(taskSendGcodeLine, "Send_Gcode_Line",
               configMINIMAL_STACK_SIZE * 2, NULL, 1, NULL);
 }
 
 void loop() {}
+
+void taskSendGcodeLine(void* pvParameters) {
+  char gcodeLine[128];
+  while (1) {
+    xQueueReceive(qGcodeLine, gcodeLine, portMAX_DELAY);
+    vTaskSuspend(xTouchscreenHandle);
+    Serial.println(gcodeLine);
+    while (!Serial.find("ok")) {
+    }
+    vTaskResume(xTouchscreenHandle);
+  }
+}
 
 void taskTouchscreenMenu(void* pvParameters) {
   DEBUG_PRINT(F("TFT size is "));
@@ -210,6 +233,38 @@ void taskTouchscreenMenu(void* pvParameters) {
           break;
         }
         case Screens::Move: {
+          if (buttonsMove[0].contains(p.x, p.y)) {
+            currentScreen = Screens::Home;
+            if (currentFile >= filecount) {
+              drawHomeScreen(&tft, buttonsHome, NULL);
+            } else {
+              drawHomeScreen(&tft, buttonsHome, files[currentFile]);
+            }
+          } else if (buttonsMove[1].contains(p.x, p.y)) {
+            // y+
+            xQueueSend(qGcodeLine, "G1 F200 Y10", portMAX_DELAY);
+            vTaskDelay(15 / portTICK_PERIOD_MS);
+          } else if (buttonsMove[2].contains(p.x, p.y)) {
+            xQueueSend(qGcodeLine, "G1 F200 Y-10", portMAX_DELAY);
+            vTaskDelay(15 / portTICK_PERIOD_MS);
+            // y-
+          } else if (buttonsMove[3].contains(p.x, p.y)) {
+            xQueueSend(qGcodeLine, "G1 F200 X10", portMAX_DELAY);
+            vTaskDelay(15 / portTICK_PERIOD_MS);
+            // x+
+          } else if (buttonsMove[4].contains(p.x, p.y)) {
+            xQueueSend(qGcodeLine, "G1 F200 X-10", portMAX_DELAY);
+            vTaskDelay(15 / portTICK_PERIOD_MS);
+            // x-
+          } else if (buttonsMove[5].contains(p.x, p.y)) {
+            xQueueSend(qGcodeLine, "G1 F200 Z10", portMAX_DELAY);
+            vTaskDelay(15 / portTICK_PERIOD_MS);
+            // z+
+          } else if (buttonsMove[6].contains(p.x, p.y)) {
+            xQueueSend(qGcodeLine, "G1 F200 Z-10", portMAX_DELAY);
+            vTaskDelay(15 / portTICK_PERIOD_MS);
+            // z-
+          }
         }
         case Screens::Config: {
           if (buttonsConfig[0].contains(p.x, p.y)) {
@@ -250,18 +305,5 @@ void taskTouchscreenMenu(void* pvParameters) {
       }
     }
     vTaskDelay(15 / portTICK_PERIOD_MS);
-  }
-}
-
-void GRBL_awaitOK() {
-  // read the receive buffer (if anything to read)
-  char c, lastc;
-  while (Serial.available()) {
-    c = Serial.read();
-    if (lastc == 'o' && c == 'k') {
-      // awaitingOK = false;
-    }
-    lastc = c;
-    delay(1);
   }
 }

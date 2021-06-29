@@ -87,20 +87,20 @@ void drawMoveScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsMove) {
   tft->drawTriangle(centerX - halfside, centerY + halfside + offset,
                     centerX + halfside, centerY + halfside + offset, centerX,
                     centerY + halfside + 35 + offset, WHITE);
-  // x-
-  buttonsMove[3].initButtonUL(tft, centerX - halfside - 35 - offset,
-                              centerY - halfside, 35, halfside * 2, RED, RED,
-                              WHITE, "", 2);
-  tft->drawTriangle(centerX - halfside - offset, centerY - halfside,
-                    centerX - halfside - offset, centerY + halfside,
-                    centerX - halfside - 35 - offset, centerY, WHITE);
   // x+
-  buttonsMove[4].initButtonUL(tft, centerX + halfside + offset,
+  buttonsMove[3].initButtonUL(tft, centerX + halfside + offset,
                               centerY - halfside, 35, halfside * 2, RED, RED,
                               WHITE, "", 2);
   tft->drawTriangle(centerX + halfside + offset, centerY - halfside,
                     centerX + halfside + offset, centerY + halfside,
                     centerX + halfside + 35 + offset, centerY, WHITE);
+  // x-
+  buttonsMove[4].initButtonUL(tft, centerX - halfside - 35 - offset,
+                              centerY - halfside, 35, halfside * 2, RED, RED,
+                              WHITE, "", 2);
+  tft->drawTriangle(centerX - halfside - offset, centerY - halfside,
+                    centerX - halfside - offset, centerY + halfside,
+                    centerX - halfside - 35 - offset, centerY, WHITE);
   // z+
   buttonsMove[5].initButtonUL(tft, 270 - halfside,
                               centerY - halfside - 35 - offset, halfside * 2,
