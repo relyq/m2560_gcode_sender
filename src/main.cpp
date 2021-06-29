@@ -1,25 +1,13 @@
 #include <Arduino.h>
 
 #define VERSION "0.0.1"
-#define DEBUG_ENABLED 0
-
-#ifdef DEBUG_ENABLED
-#define DEBUG_BEGIN(x) Serial.begin(x)
-#define DEBUG_PRINT(x) Serial.print(x)
-#define DEBUG_PRINTLN(x) Serial.println(x)
-#define DEBUG_PRINTDEC(x) Serial.print(x, DEC)
-#define DEBUG_PRINTLNDEC(x) Serial.println(x, DEC)
-#else
-#define DEBUG_BEGIN(x)
-#define DEBUG_PRINT(x)
-#define DEBUG_PRINTDEC(x)
-#define DEBUG_PRINTLN(x)
-#endif
 
 #include "Arduino_FreeRTOS.h"
+#include "DEBUG_things.h"
 #include "SD.h"
 #include "SPI.h"
 //#include "calibrate/calibrate.h"
+#include "SD_things.h"
 #include "common_defs.h"
 #include "draw_screens.h"
 #include "src/Adafruit_GFX.h"     // Core graphics library
@@ -34,6 +22,7 @@ TouchScreen ts = TouchScreen(XP, YP, XM, YM, RX);
 File root;
 
 Adafruit_GFX_Button buttonsHome[3];
+Adafruit_GFX_Button buttonsMove[12];
 Adafruit_GFX_Button buttonsSD[2];
 Adafruit_GFX_Button buttonsConfig[2];
 
@@ -46,9 +35,6 @@ Screens currentScreen;  // acá guardo la pantalla activa
 Screens prevScreen;     // acá guardo la pantalla anterior
 
 void taskTouchscreenMenu(void* pvParameters);
-int8_t SD_filecount(File dir, uint8_t* filecount, char* filenames[]);
-int8_t SD_getFileName(File dir, uint8_t fnum, char* buffer);
-int8_t SD_getFileCount(File dir, uint8_t* fnum);
 
 void setup() {
   Serial.begin(115200);
@@ -98,7 +84,9 @@ void taskTouchscreenMenu(void* pvParameters) {
 
   tft.fillScreen(BLACK);
 
-  drawHomeScreen(&tft, buttonsHome, "");
+  //  drawHomeScreen(&tft, buttonsHome, "");
+  drawMoveScreen(&tft, buttonsMove);
+  currentScreen = Screens::Move;
 
   while (1) {
     TSPoint p = ts.getPoint();
@@ -131,6 +119,9 @@ void taskTouchscreenMenu(void* pvParameters) {
             if (currentFile != 0xff) {
               tft.fillCircle(300, 42 + 28 * currentFile, 5, WHITE);
             }
+          } else if (buttonsHome[1].contains(p.x, p.y)) {
+            currentScreen = Screens::Move;
+            drawMoveScreen(&tft, buttonsMove);
           } else if (buttonsHome[2].contains(p.x, p.y)) {
             currentScreen = Screens::Config;
             drawConfigScreen(&tft, buttonsConfig);
@@ -218,6 +209,8 @@ void taskTouchscreenMenu(void* pvParameters) {
           }
           break;
         }
+        case Screens::Move: {
+        }
         case Screens::Config: {
           if (buttonsConfig[0].contains(p.x, p.y)) {
             currentScreen = Screens::Calibration;
@@ -260,87 +253,15 @@ void taskTouchscreenMenu(void* pvParameters) {
   }
 }
 
-int8_t SD_filecount(File dir, uint8_t* filecount, char* filenames[]) {
-  if (!dir || !filecount || !filenames) {
-    return -1;
-    DEBUG_PRINTLN("filecount error");
-  }
-
-  uint8_t i = 0;
-  while (1) {
-    File f = dir.openNextFile();
-
-    if (!f) {
-      // no more files
-      *filecount = i;
-      dir.rewindDirectory();
-      return 0;
+void GRBL_awaitOK() {
+  // read the receive buffer (if anything to read)
+  char c, lastc;
+  while (Serial.available()) {
+    c = Serial.read();
+    if (lastc == 'o' && c == 'k') {
+      // awaitingOK = false;
     }
-    if (strcmp(f.name(), "SYSTEM~1")) {
-      DEBUG_PRINT(i);
-      DEBUG_PRINT(".\t");
-
-      DEBUG_PRINT(f.name());
-      strcpy(filenames[i], f.name());
-      // filenames[i] = f.name();
-
-      DEBUG_PRINT("\t\t");
-      DEBUG_PRINTLNDEC(f.size());
-      DEBUG_PRINTLN(filenames[i]);
-      i++;
-    }
+    lastc = c;
+    delay(1);
   }
-  return -1;
-}
-
-int8_t SD_getFileName(File dir, uint8_t fnum, char* buffer) {
-  if (!dir || !buffer) {
-    return -1;
-    DEBUG_PRINTLN("filecount error");
-  }
-
-  uint8_t i = 0;
-  while (1) {
-    File f = dir.openNextFile();
-
-    if (!f) {
-      // no more files - file not found
-      dir.rewindDirectory();
-      DEBUG_PRINTLN("file not found");
-      return 1;
-    }
-    if (strcmp(f.name(), "SYSTEM~1")) {
-      if (i == fnum) {
-        strcpy(buffer, f.name());
-
-        dir.rewindDirectory();
-        return 0;
-      }
-      i++;
-    }
-  }
-  return -1;
-}
-
-int8_t SD_getFileCount(File dir, uint8_t* fnum) {
-  if (!dir || !fnum) {
-    return -1;
-    DEBUG_PRINTLN("filecount error");
-  }
-
-  uint8_t i = 0;
-  while (1) {
-    File f = dir.openNextFile();
-
-    if (!f) {
-      // no more files - file not found
-      dir.rewindDirectory();
-      *fnum = i;
-      return 0;
-    }
-    if (strcmp(f.name(), "SYSTEM~1")) {
-      i++;
-    }
-  }
-  return -1;
 }
