@@ -1,5 +1,8 @@
 # m2560_gcode_sender
 
+agregar control de distancia a avanzar por cada movimiento
+agregar control de feedrate
+
 necesito una task que maneje el cambio de pantallas cuando se toca la pantalla (taskTouchscreenMenu) y otra task que maneje la actualización del dashboard
 probablemente voy a necesitar una task para elegir el archivo de la sd
 
@@ -9,9 +12,9 @@ tengo que hacer una mejor forma de asegurarme de que no le doy un ptr ilegal a d
 
 solo se puede sacar la SD con el programa apagado
 
-debería plantearme hacer un archivo para cada task por cuestión de orden
-
 por qué drawSDScreen() funciona con char (*filenames)[20]? tengo otra forma de hacer que acepte como parametro un char filenames[][]?
+
+<s>debería plantearme hacer un archivo para cada task por cuestión de orden</s>
 
 <s>el programa no debería pasar de setup() si no se encuentra pantalla o tarjeta sd</s>
 
