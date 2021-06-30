@@ -8,5 +8,6 @@
 
 void taskTouchscreenMenu(void* pvParameters);
 void taskSendGcodeLine(void* pvParameters);
+void taskSendGcodeFile(void* pvParameters);
 
 #endif

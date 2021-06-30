@@ -1,5 +1,4 @@
 #include "DEBUG_things.h"
-#include "SD_things.h"
 #include "common_defs.h"
 #include "draw_screens.h"
 #include "gcode_tasks.h"
@@ -10,12 +9,13 @@
 
 void taskTouchscreenMenu(void* pvParameters) {
   extern QueueHandle_t qGcodeLine;
+  extern QueueHandle_t qGcodeFile;
 
   Adafruit_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 
   TouchScreen ts = TouchScreen(XP, YP, XM, YM, RX);
 
-  static Adafruit_GFX_Button buttonsHome[3];
+  static Adafruit_GFX_Button buttonsHome[4];
   static Adafruit_GFX_Button buttonsMove[12];
   static Adafruit_GFX_Button buttonsSD[2];
   static Adafruit_GFX_Button buttonsConfig[1];
@@ -28,6 +28,8 @@ void taskTouchscreenMenu(void* pvParameters) {
   extern char files[5][20];
   extern uint8_t filecount;
 
+  bool fileSelected = 0;
+
   DEBUG_PRINT(F("TFT size is "));
   DEBUG_PRINT(tft.width());
   DEBUG_PRINT(F("x"));
@@ -39,9 +41,8 @@ void taskTouchscreenMenu(void* pvParameters) {
 
   tft.fillScreen(BLACK);
 
-  //  drawHomeScreen(&tft, buttonsHome, "");
-  drawMoveScreen(&tft, buttonsMove);
-  currentScreen = Screens::Move;
+  currentScreen = Screens::Home;
+  drawHomeScreen(&tft, buttonsHome, NULL);
 
   while (1) {
     TSPoint p = ts.getPoint();
@@ -58,7 +59,7 @@ void taskTouchscreenMenu(void* pvParameters) {
 
       if (currentScreen != Screens::Home && (p.x > 320)) {
         currentScreen = Screens::Home;
-        if (currentFile >= filecount) {
+        if (!fileSelected) {
           drawHomeScreen(&tft, buttonsHome, NULL);
         } else {
           drawHomeScreen(&tft, buttonsHome, files[currentFile]);
@@ -80,13 +81,13 @@ void taskTouchscreenMenu(void* pvParameters) {
           } else if (buttonsHome[2].contains(p.x, p.y)) {
             currentScreen = Screens::Config;
             drawConfigScreen(&tft, buttonsConfig);
+          } else if (buttonsHome[3].contains(p.x, p.y)) {
+            xQueueSend(qGcodeFile, files[currentFile], portMAX_DELAY);
+            vTaskDelay(15 / portTICK_PERIOD_MS);
           }
           break;
         }
         case Screens::SD: {
-          buttonsSD[1].initButton(&tft, 240, 220, 160, 40, WHITE, BLACK, WHITE,
-                                  "Aceptar", 3);
-
           static bool confirmButton = 0;
 
           if (buttonsSD[0].contains(p.x, p.y)) {
@@ -94,7 +95,7 @@ void taskTouchscreenMenu(void* pvParameters) {
             selectedFile = currentFile;
 
             currentScreen = Screens::Home;
-            if (currentFile >= filecount) {
+            if (!fileSelected) {
               drawHomeScreen(&tft, buttonsHome, NULL);
             } else {
               drawHomeScreen(&tft, buttonsHome, files[currentFile]);
@@ -102,13 +103,11 @@ void taskTouchscreenMenu(void* pvParameters) {
           } else if (confirmButton && buttonsSD[1].contains(p.x, p.y)) {
             confirmButton = 0;
             currentFile = selectedFile;
+            fileSelected = 1;
 
             currentScreen = Screens::Home;
-            if (currentFile >= filecount) {
-              drawHomeScreen(&tft, buttonsHome, NULL);
-            } else {
-              drawHomeScreen(&tft, buttonsHome, files[currentFile]);
-            }
+
+            drawHomeScreen(&tft, buttonsHome, files[currentFile]);
 
           } else if (filecount > 0 &&
                      (p.x >= 5 && p.x <= 315 && p.y >= 28 && p.y <= 56) &&
@@ -167,7 +166,7 @@ void taskTouchscreenMenu(void* pvParameters) {
         case Screens::Move: {
           if (buttonsMove[0].contains(p.x, p.y)) {
             currentScreen = Screens::Home;
-            if (currentFile >= filecount) {
+            if (!fileSelected) {
               drawHomeScreen(&tft, buttonsHome, NULL);
             } else {
               drawHomeScreen(&tft, buttonsHome, files[currentFile]);
@@ -201,7 +200,7 @@ void taskTouchscreenMenu(void* pvParameters) {
         case Screens::Config: {
           if (buttonsConfig[0].contains(p.x, p.y)) {
             currentScreen = Screens::Home;
-            if (currentFile >= filecount) {
+            if (!fileSelected) {
               drawHomeScreen(&tft, buttonsHome, NULL);
             } else {
               drawHomeScreen(&tft, buttonsHome, files[currentFile]);

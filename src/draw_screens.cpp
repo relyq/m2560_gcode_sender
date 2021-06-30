@@ -27,10 +27,16 @@ void drawHomeScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
   tft->setCursor(10, 240 - ((CHARACTER_HEIGHT + 2) * 3));
   tft->print(F("Z: 0.00"));
 
-  tft->setTextSize(2);
-  tft->setCursor(10, 240 - (((CHARACTER_HEIGHT + 2) * 3) * 3) -
-                         ((CHARACTER_HEIGHT + 2) * 2));
-  tft->print(currentFileName);
+  if (currentFileName) {
+    tft->setTextSize(2);
+    tft->setCursor(10, 240 - (((CHARACTER_HEIGHT + 2) * 3) * 3) -
+                           ((CHARACTER_HEIGHT + 2) * 2));
+    tft->print(currentFileName);
+
+    buttonsHome[3].initButtonUL(tft, 190, 200, 130, 40, WHITE, GREEN, WHITE,
+                                "Inicio", 3);
+    buttonsHome[3].drawRectButton();
+  }
 }
 
 void drawMoveScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsMove) {
@@ -163,6 +169,9 @@ void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
   buttonsSD[0].initButton(tft, 80, 220, 160, 40, WHITE, BLACK, WHITE, "Volver",
                           3);
   buttonsSD[0].drawButton();
+
+  buttonsSD[1].initButton(tft, 240, 220, 160, 40, WHITE, BLACK, WHITE,
+                          "Aceptar", 3);
 }
 
 void drawConfigScreen(Adafruit_TFTLCD* tft,

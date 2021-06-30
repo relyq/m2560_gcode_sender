@@ -1,7 +1,10 @@
 # m2560_gcode_sender
 
 agregar control de distancia a avanzar por cada movimiento
+
 agregar control de feedrate
+
+si uso las funciones de SdFat probablemente puedo eliminar las variables globales de los archivos y dejar todo mas tidy
 
 necesito una task que maneje el cambio de pantallas cuando se toca la pantalla (taskTouchscreenMenu) y otra task que maneje la actualización del dashboard
 probablemente voy a necesitar una task para elegir el archivo de la sd

@@ -2,18 +2,18 @@
 
 #include "gcode_tasks.h"
 
-extern HardwareSerial Serial;
 extern QueueHandle_t qGcodeLine;
-extern TaskHandle_t xTouchscreenHandle;
 
+// no quiero que se pueda enviar otra linea hasta que se complete la ultima
+// como es la tarea de mayor prioridad bloquea la pantalla tactil
 void taskSendGcodeLine(void* pvParameters) {
   char gcodeLine[128];
   while (1) {
     xQueueReceive(qGcodeLine, gcodeLine, portMAX_DELAY);
-    vTaskSuspend(xTouchscreenHandle);
+    // vTaskSuspendAll(); // no es necesario por orden de prioridades
     Serial.println(gcodeLine);
     while (!Serial.find("ok")) {
     }
-    vTaskResume(xTouchscreenHandle);
+    // xTaskResumeAll();
   }
 }
