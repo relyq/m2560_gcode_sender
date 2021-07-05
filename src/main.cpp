@@ -21,10 +21,14 @@ uint8_t filecount;
 
 QueueHandle_t qGcodeLine;
 QueueHandle_t qGcodeFile;
+QueueHandle_t qMachineStatus;
+
+TaskHandle_t hSerialPassthrough;
 
 void setup() {
   Serial.begin(115200);
-  while (!Serial) {
+  Serial1.begin(115200);
+  while (!Serial || !Serial1) {
   }
 
   DEBUG_PRINT(F("v"));
@@ -37,7 +41,7 @@ void setup() {
   }
 
   root = SD.open("/");
-  SD.ls(LS_R);
+  SD.ls(LS_A | LS_DATE | LS_SIZE | LS_R);
 
   SD_getFileCount(root, &filecount);
   for (uint8_t i = 0; i < filecount; i++) {
@@ -48,15 +52,26 @@ void setup() {
 
   qGcodeLine = xQueueCreate(1, 128);
   qGcodeFile = xQueueCreate(1, sizeof(char) * 16);
+  qMachineStatus = xQueueCreate(1, sizeof(struct Status));
 
+  // priority 1
   xTaskCreate(taskTouchscreenMenu, "Touchscreen_Menu",
               configMINIMAL_STACK_SIZE * 2, NULL, 1, NULL);
-  xTaskCreate(taskSendGcodeLine, "Send_Gcode_Line",
-              configMINIMAL_STACK_SIZE * 2, NULL, configMAX_PRIORITIES - 1,
-              NULL);
+
+  // priority 2
   xTaskCreate(taskSendGcodeFile, "Send_Gcode_File",
               configMINIMAL_STACK_SIZE * 2, NULL, configMAX_PRIORITIES - 2,
               NULL);
+  xTaskCreate(taskSerialPassthrough, "Serial_Passthrough",
+              configMINIMAL_STACK_SIZE, NULL, configMAX_PRIORITIES - 2,
+              &hSerialPassthrough);
+
+  // priority 3
+  xTaskCreate(taskSendGcodeLine, "Send_Gcode_Line",
+              configMINIMAL_STACK_SIZE * 2, NULL, configMAX_PRIORITIES - 1,
+              NULL);
+  xTaskCreate(taskGetStatus, "Get_Status", configMINIMAL_STACK_SIZE, NULL,
+              configMAX_PRIORITIES - 1, NULL);
 }
 
 void loop() {}

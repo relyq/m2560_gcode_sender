@@ -7,10 +7,10 @@
 #include "src/TouchScreen.h"
 #include "touchscreen_config.h"
 
-void taskTouchscreenMenu(void* pvParameters) {
-  extern QueueHandle_t qGcodeLine;
-  extern QueueHandle_t qGcodeFile;
+extern QueueHandle_t qGcodeLine;
+extern QueueHandle_t qGcodeFile;
 
+void taskTouchscreenMenu(void* pvParameters) {
   Adafruit_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 
   TouchScreen ts = TouchScreen(XP, YP, XM, YM, RX);
@@ -29,6 +29,8 @@ void taskTouchscreenMenu(void* pvParameters) {
   extern uint8_t filecount;
 
   bool fileSelected = 0;
+
+  DEBUG_PRINTLN(F("Touchscreen task started."));
 
   DEBUG_PRINT(F("TFT size is "));
   DEBUG_PRINT(tft.width());
@@ -71,7 +73,6 @@ void taskTouchscreenMenu(void* pvParameters) {
           if (buttonsHome[0].contains(p.x, p.y)) {
             currentScreen = Screens::SD;
             drawSDScreen(&tft, buttonsSD, filecount, files);
-
             if (currentFile != 0xff) {
               tft.fillCircle(300, 42 + 28 * currentFile, 5, WHITE);
             }
@@ -82,7 +83,12 @@ void taskTouchscreenMenu(void* pvParameters) {
             currentScreen = Screens::Config;
             drawConfigScreen(&tft, buttonsConfig);
           } else if (buttonsHome[3].contains(p.x, p.y)) {
+            drawHomeScreen(&tft, buttonsHome, files[currentFile]);
             xQueueSend(qGcodeFile, files[currentFile], portMAX_DELAY);
+            tft.setCursor(160, 120);
+            tft.print("Trabajo");
+            tft.setCursor(145, 145);
+            tft.print("terminado");
             vTaskDelay(15 / portTICK_PERIOD_MS);
           }
           break;
@@ -173,29 +179,29 @@ void taskTouchscreenMenu(void* pvParameters) {
             }
           } else if (buttonsMove[1].contains(p.x, p.y)) {
             // y+
-            xQueueSend(qGcodeLine, "G1 F200 Y10", portMAX_DELAY);
-            vTaskDelay(15 / portTICK_PERIOD_MS);
+            xQueueSend(qGcodeLine, "G91 G1 F200 Y10\n", portMAX_DELAY);
           } else if (buttonsMove[2].contains(p.x, p.y)) {
             // y-
-            xQueueSend(qGcodeLine, "G1 F200 Y-10", portMAX_DELAY);
-            vTaskDelay(15 / portTICK_PERIOD_MS);
+            xQueueSend(qGcodeLine, "G91 G1 F200 Y-10\n", portMAX_DELAY);
           } else if (buttonsMove[3].contains(p.x, p.y)) {
             // x+
-            xQueueSend(qGcodeLine, "G1 F200 X10", portMAX_DELAY);
-            vTaskDelay(15 / portTICK_PERIOD_MS);
+            xQueueSend(qGcodeLine, "G91 G1 F200 X10\n", portMAX_DELAY);
           } else if (buttonsMove[4].contains(p.x, p.y)) {
             // x-
-            xQueueSend(qGcodeLine, "G1 F200 X-10", portMAX_DELAY);
-            vTaskDelay(15 / portTICK_PERIOD_MS);
+            xQueueSend(qGcodeLine, "G91 G1 F200 X-10\n", portMAX_DELAY);
           } else if (buttonsMove[5].contains(p.x, p.y)) {
             // z+
-            xQueueSend(qGcodeLine, "G1 F200 Z10", portMAX_DELAY);
-            vTaskDelay(15 / portTICK_PERIOD_MS);
+            xQueueSend(qGcodeLine, "G91 G1 F200 Z10\n", portMAX_DELAY);
           } else if (buttonsMove[6].contains(p.x, p.y)) {
             // z-
-            xQueueSend(qGcodeLine, "G1 F200 Z-10", portMAX_DELAY);
-            vTaskDelay(15 / portTICK_PERIOD_MS);
+            xQueueSend(qGcodeLine, "G91 G1 F200 Z-10\n", portMAX_DELAY);
+          } else if (buttonsMove[7].contains(p.x, p.y)) {
+            // set zero
+            xQueueSend(qGcodeLine, "G10L20P1X0Y0Z0\n", portMAX_DELAY);
           }
+          vTaskDelay(300 / portTICK_PERIOD_MS);
+
+          break;
         }
         case Screens::Config: {
           if (buttonsConfig[0].contains(p.x, p.y)) {

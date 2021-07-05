@@ -6,8 +6,12 @@
 #include <queue.h>
 #include <task.h>
 
+#include "DEBUG_things.h"
+
 void taskTouchscreenMenu(void* pvParameters);
 void taskSendGcodeLine(void* pvParameters);
 void taskSendGcodeFile(void* pvParameters);
+void taskSerialPassthrough(void* pvParameters);
+void taskGetStatus(void* pvParameters);
 
 #endif

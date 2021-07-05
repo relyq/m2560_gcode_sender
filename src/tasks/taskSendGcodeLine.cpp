@@ -10,10 +10,11 @@ void taskSendGcodeLine(void* pvParameters) {
   char gcodeLine[128];
   while (1) {
     xQueueReceive(qGcodeLine, gcodeLine, portMAX_DELAY);
-    // vTaskSuspendAll(); // no es necesario por orden de prioridades
-    Serial.println(gcodeLine);
-    while (!Serial.find("ok")) {
+    DEBUG_PRINT("gcode line sent: ");
+    DEBUG_PRINTLN(gcodeLine);
+    Serial1.print(gcodeLine);
+    while (!Serial1.find("ok")) {
+      DEBUG_PRINTLN("Waiting for ok");
     }
-    // xTaskResumeAll();
   }
 }

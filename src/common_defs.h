@@ -29,4 +29,11 @@
 
 enum class Screens { Home, SD, Move, Config };
 
+struct Status {
+  char* state;
+  char* x;
+  char* y;
+  char* z;
+};
+
 #endif
