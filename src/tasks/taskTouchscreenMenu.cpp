@@ -76,9 +76,6 @@ void taskTouchscreenMenu(void* pvParameters) {
             if (currentFile != 0xff) {
               tft.fillCircle(300, 42 + 28 * currentFile, 5, WHITE);
             }
-          } else if (buttonsHome[1].contains(p.x, p.y)) {
-            currentScreen = Screens::Move;
-            drawMoveScreen(&tft, buttonsMove);
           } else if (buttonsHome[2].contains(p.x, p.y)) {
             currentScreen = Screens::Config;
             drawConfigScreen(&tft, buttonsConfig);
