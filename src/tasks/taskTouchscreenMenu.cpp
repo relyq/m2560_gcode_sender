@@ -15,7 +15,7 @@ void taskTouchscreenMenu(void* pvParameters) {
 
   TouchScreen ts = TouchScreen(XP, YP, XM, YM, RX);
 
-  static Adafruit_GFX_Button buttonsHome[4];
+  static Adafruit_GFX_Button buttonsHome[8];
   static Adafruit_GFX_Button buttonsMove[12];
   static Adafruit_GFX_Button buttonsSD[2];
   static Adafruit_GFX_Button buttonsConfig[1];
@@ -82,6 +82,27 @@ void taskTouchscreenMenu(void* pvParameters) {
           } else if (buttonsHome[2].contains(p.x, p.y)) {
             currentScreen = Screens::Config;
             drawConfigScreen(&tft, buttonsConfig);
+          } else if (buttonsHome[4].contains(p.x, p.y)) {
+            // homing
+            xQueueSend(qGcodeLine, "$H\n", portMAX_DELAY);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
+          } else if (buttonsHome[5].contains(p.x, p.y)) {
+            // go to zero
+            // xQueueSend(qGcodeLine, "G28G91X0Y0Z0\n", portMAX_DELAY); // esto
+            // deberia funcionar pero esto es lo que hace bCNC
+            xQueueSend(qGcodeLine, "G90\n", portMAX_DELAY);
+            xQueueSend(qGcodeLine, "G0Z3\n", portMAX_DELAY);  // safe z
+            xQueueSend(qGcodeLine, "G0X0Y0\n", portMAX_DELAY);
+            xQueueSend(qGcodeLine, "G0Z0\n", portMAX_DELAY);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
+          } else if (buttonsHome[6].contains(p.x, p.y)) {
+            // probe
+            xQueueSend(qGcodeLine, "G38.3Z-5F30.0\n", portMAX_DELAY);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
+          } else if (buttonsHome[7].contains(p.x, p.y)) {
+            // set zero
+            xQueueSend(qGcodeLine, "G10L20P1X0Y0Z0\n", portMAX_DELAY);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
           } else if (buttonsHome[3].contains(p.x, p.y)) {
             drawHomeScreen(&tft, buttonsHome, files[currentFile]);
             xQueueSend(qGcodeFile, files[currentFile], portMAX_DELAY);

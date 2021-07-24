@@ -11,26 +11,34 @@ void drawHomeScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
   buttonsHome[0].initButton(tft, 160, 25, 230, 40, WHITE, BLACK, WHITE,
                             "Programas", 3);
   buttonsHome[0].drawButton();
+
   buttonsHome[1].initButton(tft, 80, 70, 130, 40, WHITE, BLACK, WHITE, "Mover",
                             3);
   buttonsHome[1].drawButton();
+
   buttonsHome[2].initButton(tft, 240, 70, 130, 40, WHITE, BLACK, WHITE,
                             "Config", 3);
   buttonsHome[2].drawButton();
 
-  tft->setTextSize(3);
-  tft->setTextColor(WHITE, BLACK);
-  tft->setCursor(10, 240 - ((CHARACTER_HEIGHT + 2) * 3) * 3);
-  tft->print(F("X: 0.00"));
-  tft->setCursor(10, 240 - ((CHARACTER_HEIGHT + 2) * 3) * 2);
-  tft->print(F("Y: 0.00"));
-  tft->setCursor(10, 240 - ((CHARACTER_HEIGHT + 2) * 3));
-  tft->print(F("Z: 0.00"));
+  buttonsHome[4].initButton(tft, 80, 160, 130, 40, WHITE, BLACK, WHITE, "Home",
+                            3);
+  buttonsHome[4].drawButton();
+
+  buttonsHome[5].initButton(tft, 240, 160, 130, 40, WHITE, BLACK, WHITE, "Ir 0",
+                            3);
+  buttonsHome[5].drawButton();
+
+  buttonsHome[6].initButton(tft, 80, 115, 130, 40, WHITE, BLACK, WHITE, "Probe",
+                            3);
+  buttonsHome[6].drawButton();
+
+  buttonsHome[7].initButton(tft, 240, 115, 130, 40, WHITE, BLACK, WHITE,
+                            "Set 0", 3);
+  buttonsHome[7].drawButton();
 
   if (currentFileName) {
     tft->setTextSize(2);
-    tft->setCursor(10, 240 - (((CHARACTER_HEIGHT + 2) * 3) * 3) -
-                           ((CHARACTER_HEIGHT + 2) * 2));
+    tft->setCursor(10, 240 - (CHARACTER_HEIGHT * 2) - 5);
     tft->print(currentFileName);
 
     buttonsHome[3].initButtonUL(tft, 190, 200, 130, 40, WHITE, GREEN, WHITE,
@@ -147,7 +155,7 @@ void drawMoveScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsMove) {
   buttonsMove[8].drawButton();
 
   buttonsMove[0].initButtonUL(tft, 220, 210, 100, 30, WHITE, BLACK, WHITE,
-                              "Aceptar", 2);
+                              "Volver", 2);
   buttonsMove[0].drawButton();
 }
 
