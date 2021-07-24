@@ -76,11 +76,16 @@ void taskTouchscreenMenu(void* pvParameters) {
             if (currentFile != 0xff) {
               tft.fillCircle(300, 42 + 28 * currentFile, 5, WHITE);
             }
+          } else if (buttonsHome[1].contains(p.x, p.y)) {
+            currentScreen = Screens::Move;
+            drawMoveScreen(&tft, buttonsMove);
+          } else if (buttonsHome[2].contains(p.x, p.y)) {
+            currentScreen = Screens::Config;
+            drawConfigScreen(&tft, buttonsConfig);
           } else if (buttonsHome[4].contains(p.x, p.y)) {
             // homing
             xQueueSend(qGcodeLine, "$H\n", portMAX_DELAY);
             vTaskDelay(500 / portTICK_PERIOD_MS);
-
           } else if (buttonsHome[5].contains(p.x, p.y)) {
             // go to zero
             // xQueueSend(qGcodeLine, "G28G91X0Y0Z0\n", portMAX_DELAY); // esto
@@ -90,17 +95,14 @@ void taskTouchscreenMenu(void* pvParameters) {
             xQueueSend(qGcodeLine, "G0X0Y0\n", portMAX_DELAY);
             xQueueSend(qGcodeLine, "G0Z0\n", portMAX_DELAY);
             vTaskDelay(500 / portTICK_PERIOD_MS);
-
           } else if (buttonsHome[6].contains(p.x, p.y)) {
             // probe
             xQueueSend(qGcodeLine, "G38.3Z-5F30.0\n", portMAX_DELAY);
             vTaskDelay(500 / portTICK_PERIOD_MS);
-
           } else if (buttonsHome[7].contains(p.x, p.y)) {
             // set zero
             xQueueSend(qGcodeLine, "G10L20P1X0Y0Z0\n", portMAX_DELAY);
             vTaskDelay(500 / portTICK_PERIOD_MS);
-
           } else if (buttonsHome[3].contains(p.x, p.y)) {
             drawHomeScreen(&tft, buttonsHome, files[currentFile]);
             xQueueSend(qGcodeFile, files[currentFile], portMAX_DELAY);
