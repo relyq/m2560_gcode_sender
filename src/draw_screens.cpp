@@ -21,14 +21,21 @@ void drawHomeScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
                             3);
   buttonsHome[4].drawButton();
 
-  buttonsHome[5].initButton(tft, 240, 70, 130, 40, WHITE, BLACK, WHITE, "Cero",
+  buttonsHome[5].initButton(tft, 240, 70, 130, 40, WHITE, BLACK, WHITE, "Ir 0",
                             3);
   buttonsHome[5].drawButton();
 
+  buttonsHome[6].initButton(tft, 80, 115, 130, 40, WHITE, BLACK, WHITE, "Probe",
+                            3);
+  buttonsHome[6].drawButton();
+
+  buttonsHome[7].initButton(tft, 240, 115, 130, 40, WHITE, BLACK, WHITE,
+                            "Set 0", 3);
+  buttonsHome[7].drawButton();
+
   if (currentFileName) {
     tft->setTextSize(2);
-    tft->setCursor(10, 240 - (((CHARACTER_HEIGHT + 2) * 3) * 3) -
-                           ((CHARACTER_HEIGHT + 2) * 2));
+    tft->setCursor(10, 240 - (CHARACTER_HEIGHT * 2) - 5);
     tft->print(currentFileName);
 
     buttonsHome[3].initButtonUL(tft, 190, 200, 130, 40, WHITE, GREEN, WHITE,
