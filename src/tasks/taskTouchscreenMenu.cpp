@@ -16,7 +16,7 @@ void taskTouchscreenMenu(void* pvParameters) {
   TouchScreen ts = TouchScreen(XP, YP, XM, YM, RX);
 
   static Adafruit_GFX_Button buttonsHome[8];
-  static Adafruit_GFX_Button buttonsMove[12];
+  static Adafruit_GFX_Button buttonsMove[7];
   static Adafruit_GFX_Button buttonsSD[2];
   static Adafruit_GFX_Button buttonsConfig[1];
 
@@ -104,12 +104,21 @@ void taskTouchscreenMenu(void* pvParameters) {
             xQueueSend(qGcodeLine, "G10L20P1X0Y0Z0\n", portMAX_DELAY);
             vTaskDelay(500 / portTICK_PERIOD_MS);
           } else if (buttonsHome[3].contains(p.x, p.y)) {
+            // send file
             drawHomeScreen(&tft, buttonsHome, files[currentFile]);
+            xQueueSend(qGcodeLine, "G91 G1 F200 X6.5\n", portMAX_DELAY);
+            xQueueSend(qGcodeLine, "G91 G1 F200 Y16.15\n", portMAX_DELAY);
+            xQueueSend(qGcodeLine, "G38.3Z-5F30.0\n", portMAX_DELAY);
+            xQueueSend(qGcodeLine, "G10L20P1X0Y0Z0\n", portMAX_DELAY);
             xQueueSend(qGcodeFile, files[currentFile], portMAX_DELAY);
-            tft.setCursor(160, 120);
-            tft.print("Trabajo");
-            tft.setCursor(145, 145);
-            tft.print("terminado");
+
+            tft.fillScreen(BLACK);
+            tft.setTextSize(3);
+            tft.setCursor((320 - (CHARACTER_WIDTH * 3 * 17)) / 2,
+                          120 - (CHARACTER_HEIGHT * 3));
+            tft.print("Trabajo terminado");
+            currentScreen = Screens::Done;
+
             vTaskDelay(15 / portTICK_PERIOD_MS);
           }
           break;
@@ -234,6 +243,10 @@ void taskTouchscreenMenu(void* pvParameters) {
             }
           }
           break;
+        }
+        case Screens::Done: {
+          currentScreen = Screens::Home;
+          drawHomeScreen(&tft, buttonsHome, files[currentFile]);
         }
       }
     }
