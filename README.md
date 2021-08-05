@@ -1,5 +1,9 @@
 # m2560_gcode_sender
 
+puedo hacer que cuando se toca la pantalla de trabajo terminado la máquina haga un homing cycle automáticamente
+
+puedo hacer que la máquina se mueva al centro de la primera tuerca y haga un probe en el preambulo del gcode
+
 agregar control de distancia a avanzar por cada movimiento
 
 agregar control de feedrate
