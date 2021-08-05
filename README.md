@@ -1,5 +1,9 @@
 # m2560_gcode_sender
 
+no sé porque hay que seleccionar de vuelta el programa después de terminar el trabajo
+
+debería mostrar una pantalla diferente cuando se está realizando el trabajo
+
 puedo hacer que cuando se toca la pantalla de trabajo terminado la máquina haga un homing cycle automáticamente
 
 puedo hacer que la máquina se mueva al centro de la primera tuerca y haga un probe en el preambulo del gcode
