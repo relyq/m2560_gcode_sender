@@ -51,13 +51,13 @@ void taskTouchscreenMenu(void* pvParameters) {
 
     if (p.z > MINPRESSURE) {
       // el modulo tactil tiene 60 puntos no dibujables en la pantalla
-      TSPoint pointTemp = p;
+      TSPoint pointTmp = p;
 
       pinMode(XM, OUTPUT);
       pinMode(YP, OUTPUT);
 
-      p.y = map(pointTemp.x, TS_MINX, TS_MAXX, tft.height(), 0);
-      p.x = map(pointTemp.y, TS_MINY, TS_MAXY - 60, 0, tft.width());
+      p.y = map(pointTmp.x, TS_MINX, TS_MAXX, tft.height(), 0);
+      p.x = map(pointTmp.y, TS_MINY, TS_MAXY - 60, 0, tft.width());
 
       if (currentScreen != Screens::Home && (p.x > 320)) {
         currentScreen = Screens::Home;
@@ -97,7 +97,7 @@ void taskTouchscreenMenu(void* pvParameters) {
             vTaskDelay(500 / portTICK_PERIOD_MS);
           } else if (buttonsHome[6].contains(p.x, p.y)) {
             // probe
-            xQueueSend(qGcodeLine, "G38.3Z-5F30.0\n", portMAX_DELAY);
+            xQueueSend(qGcodeLine, "G38.3Z-25F30.0\n", portMAX_DELAY);
             vTaskDelay(500 / portTICK_PERIOD_MS);
           } else if (buttonsHome[7].contains(p.x, p.y)) {
             // set zero
@@ -106,11 +106,12 @@ void taskTouchscreenMenu(void* pvParameters) {
           } else if (buttonsHome[3].contains(p.x, p.y)) {
             // send file
             drawHomeScreen(&tft, buttonsHome, files[currentFile]);
-            xQueueSend(qGcodeLine, "G91 G1 F200 X6.5\n", portMAX_DELAY);
-            xQueueSend(qGcodeLine, "G91 G1 F200 Y16.15\n", portMAX_DELAY);
-            xQueueSend(qGcodeLine, "G38.3Z-5F30.0\n", portMAX_DELAY);
+            xQueueSend(qGcodeLine, "G91G1F450X6.3Y16.45Z-15\n", portMAX_DELAY);
+            xQueueSend(qGcodeLine, "G38.3Z-3F30.0\n", portMAX_DELAY);
+            xQueueSend(qGcodeLine, "G91G1F30Z0.1\n", portMAX_DELAY);
             xQueueSend(qGcodeLine, "G10L20P1X0Y0Z0\n", portMAX_DELAY);
             xQueueSend(qGcodeFile, files[currentFile], portMAX_DELAY);
+            xQueueSend(qGcodeLine, "G91G1F450Y80\n", portMAX_DELAY);
 
             tft.fillScreen(BLACK);
             tft.setTextSize(3);
