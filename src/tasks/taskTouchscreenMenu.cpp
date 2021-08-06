@@ -111,7 +111,7 @@ void taskTouchscreenMenu(void* pvParameters) {
             xQueueSend(qGcodeLine, "G91G1F30Z0.1\n", portMAX_DELAY);
             xQueueSend(qGcodeLine, "G10L20P1X0Y0Z0\n", portMAX_DELAY);
             xQueueSend(qGcodeFile, files[currentFile], portMAX_DELAY);
-            xQueueSend(qGcodeLine, "G91G1F450Y80\n", portMAX_DELAY);
+            xQueueSend(qGcodeLine, "G28\n", portMAX_DELAY);
 
             tft.fillScreen(BLACK);
             tft.setTextSize(3);
@@ -246,6 +246,7 @@ void taskTouchscreenMenu(void* pvParameters) {
           break;
         }
         case Screens::Done: {
+          xQueueSend(qGcodeLine, "$H\n", portMAX_DELAY);
           currentScreen = Screens::Home;
           drawHomeScreen(&tft, buttonsHome, files[currentFile]);
         }
