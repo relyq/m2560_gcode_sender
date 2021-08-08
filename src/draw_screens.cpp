@@ -12,7 +12,7 @@ void drawHomeScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
                             "Programas", 3);
   buttonsHome[0].drawButton();
 
-  buttonsHome[4].initButton(tft, 80, 160, 130, 40, WHITE, BLACK, WHITE, "Home",
+  buttonsHome[4].initButton(tft, 160, 70, 130, 40, WHITE, BLACK, WHITE, "Home",
                             3);
   buttonsHome[4].drawButton();
 
