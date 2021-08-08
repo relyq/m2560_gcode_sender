@@ -242,7 +242,7 @@ void taskTouchscreenMenu(void* pvParameters) {
           break;
         }
         case Screens::Done: {
-          xQueueSend(qGcodeLine, "G53G0X0Y0Z0\n", portMAX_DELAY);
+          xQueueSend(qGcodeLine, "G53G0X-184Y-249Z-1\n", portMAX_DELAY);
           currentScreen = Screens::Home;
           drawHomeScreen(&tft, buttonsHome, files[currentFile]);
         }
