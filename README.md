@@ -1,12 +1,10 @@
 # m2560_gcode_sender
 
-no sé porque hay que seleccionar de vuelta el programa después de terminar el trabajo
-
 debería mostrar una pantalla diferente cuando se está realizando el trabajo
 
-puedo hacer que cuando se toca la pantalla de trabajo terminado la máquina haga un homing cycle automáticamente
-
 puedo hacer que la máquina se mueva al centro de la primera tuerca y haga un probe en el preambulo del gcode
+
+en vez de hacer un homing cycle cada vez que se termina el trabajo solo tengo que volver al punto del homing para no gastar los limit switches
 
 agregar control de distancia a avanzar por cada movimiento
 
@@ -31,3 +29,5 @@ por qué drawSDScreen() funciona con char (*filenames)[20]? tengo otra forma de 
 <s>el programa no debería pasar de setup() si no se encuentra pantalla o tarjeta sd</s>
 
 <s>debería guardar la lista de archivos al principio del programa en vez de contarlos cada vez que lo necesito</s>
+
+<s>puedo hacer que cuando se toca la pantalla de trabajo terminado la máquina haga un homing cycle automáticamente</s>
