@@ -106,7 +106,7 @@ void taskTouchscreenMenu(void* pvParameters) {
           } else if (buttonsHome[3].contains(p.x, p.y)) {
             // send file
             drawHomeScreen(&tft, buttonsHome, files[currentFile]);
-            xQueueSend(qGcodeLine, "G91G1F450X6Y16Z-12\n", portMAX_DELAY);
+            xQueueSend(qGcodeLine, "G91G1F450X6.15Y16Z-12\n", portMAX_DELAY);
             xQueueSend(qGcodeLine, "G38.3Z-5F30.0\n", portMAX_DELAY);
             xQueueSend(qGcodeLine, "G91G1F30Z0.1\n", portMAX_DELAY);
             xQueueSend(qGcodeLine, "G10L20P1X0Y0Z0\n", portMAX_DELAY);
