@@ -27,7 +27,7 @@
 #define BUTTON_TEXTSIZE 3
 #define TITLE_TEXTSIZE 2
 
-enum class Screens { Home, SD, Move, Config };
+enum class Screens { Home, SD, Move, Config, Done };
 
 struct Status {
   char* state;

@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#define VERSION "0.0.1"
+#define VERSION "0.9.2"
 
 #include "Arduino_FreeRTOS.h"
 #include "DEBUG_things.h"

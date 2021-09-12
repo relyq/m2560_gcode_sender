@@ -51,13 +51,13 @@ void taskTouchscreenMenu(void* pvParameters) {
 
     if (p.z > MINPRESSURE) {
       // el modulo tactil tiene 60 puntos no dibujables en la pantalla
-      TSPoint pointTemp = p;
+      TSPoint pointTmp = p;
 
       pinMode(XM, OUTPUT);
       pinMode(YP, OUTPUT);
 
-      p.y = map(pointTemp.x, TS_MINX, TS_MAXX, tft.height(), 0);
-      p.x = map(pointTemp.y, TS_MINY, TS_MAXY - 60, 0, tft.width());
+      p.y = map(pointTmp.x, TS_MINX, TS_MAXX, tft.height(), 0);
+      p.x = map(pointTmp.y, TS_MINY, TS_MAXY - 60, 0, tft.width());
 
       if (currentScreen != Screens::Home && (p.x > 320)) {
         currentScreen = Screens::Home;
@@ -82,15 +82,33 @@ void taskTouchscreenMenu(void* pvParameters) {
             vTaskDelay(500 / portTICK_PERIOD_MS);
           } else if (buttonsHome[5].contains(p.x, p.y)) {
             // go to zero
-            xQueueSend(qGcodeLine, "G28G91X0Y0Z0\n", portMAX_DELAY);
+            // xQueueSend(qGcodeLine, "G28G91X0Y0Z0\n", portMAX_DELAY); // esto
+            // deberia funcionar pero esto es lo que hace bCNC
+            xQueueSend(qGcodeLine, "G90\n", portMAX_DELAY);
+            xQueueSend(qGcodeLine, "G0Z3\n", portMAX_DELAY);  // safe z
+            xQueueSend(qGcodeLine, "G0X0Y0\n", portMAX_DELAY);
+            xQueueSend(qGcodeLine, "G0Z0\n", portMAX_DELAY);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
+          } else if (buttonsHome[6].contains(p.x, p.y)) {
+            // probe
+            xQueueSend(qGcodeLine, "G38.3Z-25F30.0\n", portMAX_DELAY);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
+          } else if (buttonsHome[7].contains(p.x, p.y)) {
+            // set zero
+            xQueueSend(qGcodeLine, "G10L20P1X0Y0Z0\n", portMAX_DELAY);
             vTaskDelay(500 / portTICK_PERIOD_MS);
           } else if (buttonsHome[3].contains(p.x, p.y)) {
             drawHomeScreen(&tft, buttonsHome, files[currentFile]);
             xQueueSend(qGcodeFile, files[currentFile], portMAX_DELAY);
-            tft.setCursor(160, 120);
-            tft.print("Trabajo");
-            tft.setCursor(145, 145);
-            tft.print("terminado");
+            xQueueSend(qGcodeLine, "G28\n", portMAX_DELAY);
+
+            tft.fillScreen(BLACK);
+            tft.setTextSize(3);
+            tft.setCursor((320 - (CHARACTER_WIDTH * 3 * 17)) / 2,
+                          120 - (CHARACTER_HEIGHT * 3));
+            tft.print("Trabajo terminado");
+            currentScreen = Screens::Done;
+
             vTaskDelay(15 / portTICK_PERIOD_MS);
           }
           break;
@@ -215,6 +233,11 @@ void taskTouchscreenMenu(void* pvParameters) {
             }
           }
           break;
+        }
+        case Screens::Done: {
+          xQueueSend(qGcodeLine, "G53G0X-184Y-249Z-1\n", portMAX_DELAY);
+          currentScreen = Screens::Home;
+          drawHomeScreen(&tft, buttonsHome, files[currentFile]);
         }
       }
     }
