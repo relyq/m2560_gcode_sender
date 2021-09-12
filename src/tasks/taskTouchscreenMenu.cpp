@@ -16,7 +16,7 @@ void taskTouchscreenMenu(void* pvParameters) {
   TouchScreen ts = TouchScreen(XP, YP, XM, YM, RX);
 
   static Adafruit_GFX_Button buttonsHome[8];
-  static Adafruit_GFX_Button buttonsMove[12];
+  static Adafruit_GFX_Button buttonsMove[7];
   static Adafruit_GFX_Button buttonsSD[2];
   static Adafruit_GFX_Button buttonsConfig[1];
 
@@ -76,11 +76,16 @@ void taskTouchscreenMenu(void* pvParameters) {
             if (currentFile != 0xff) {
               tft.fillCircle(300, 42 + 28 * currentFile, 5, WHITE);
             }
+          } else if (buttonsHome[1].contains(p.x, p.y)) {
+            currentScreen = Screens::Move;
+            drawMoveScreen(&tft, buttonsMove);
+          } else if (buttonsHome[2].contains(p.x, p.y)) {
+            currentScreen = Screens::Config;
+            drawConfigScreen(&tft, buttonsConfig);
           } else if (buttonsHome[4].contains(p.x, p.y)) {
             // homing
             xQueueSend(qGcodeLine, "$H\n", portMAX_DELAY);
             vTaskDelay(500 / portTICK_PERIOD_MS);
-
           } else if (buttonsHome[5].contains(p.x, p.y)) {
             // go to zero
             // xQueueSend(qGcodeLine, "G28G91X0Y0Z0\n", portMAX_DELAY); // esto
@@ -98,8 +103,8 @@ void taskTouchscreenMenu(void* pvParameters) {
             // set zero
             xQueueSend(qGcodeLine, "G10L20P1X0Y0Z0\n", portMAX_DELAY);
             vTaskDelay(500 / portTICK_PERIOD_MS);
-
           } else if (buttonsHome[3].contains(p.x, p.y)) {
+            // send file
             drawHomeScreen(&tft, buttonsHome, files[currentFile]);
             xQueueSend(qGcodeFile, files[currentFile], portMAX_DELAY);
             xQueueSend(qGcodeLine, "G28\n", portMAX_DELAY);
@@ -138,24 +143,24 @@ void taskTouchscreenMenu(void* pvParameters) {
             drawHomeScreen(&tft, buttonsHome, files[currentFile]);
 
           } else if (filecount > 0 &&
-                     (p.x >= 5 && p.x <= 315 && p.y >= 28 && p.y <= 56) &&
+                     (p.x >= 5 && p.x <= 315 && p.y >= 35 - 5 && p.y <= 63) &&
                      (selectedFile != 0)) {
-            tft.fillCircle(300, 42, 5, WHITE);
-            tft.fillCircle(300, 70, 5, BLACK);
-            tft.fillCircle(300, 98, 5, BLACK);
-            tft.fillCircle(300, 126, 5, BLACK);
+            tft.fillCircle(300, 46, 5, WHITE);
+            tft.fillCircle(300, 81, 5, BLACK);
+            tft.fillCircle(300, 116, 5, BLACK);
+            tft.fillCircle(300, 151, 5, BLACK);
             if (!confirmButton) {
               buttonsSD[1].drawButton();
               confirmButton = 1;
             }
             selectedFile = 0;
           } else if (filecount > 1 &&
-                     (p.x >= 5 && p.x <= 315 && p.y >= 56 && p.y <= 84) &&
+                     (p.x >= 5 && p.x <= 315 && p.y >= 63 && p.y <= 98) &&
                      (selectedFile != 1)) {
-            tft.fillCircle(300, 42, 5, BLACK);
-            tft.fillCircle(300, 70, 5, WHITE);
-            tft.fillCircle(300, 98, 5, BLACK);
-            tft.fillCircle(300, 126, 5, BLACK);
+            tft.fillCircle(300, 46, 5, BLACK);
+            tft.fillCircle(300, 81, 5, WHITE);
+            tft.fillCircle(300, 116, 5, BLACK);
+            tft.fillCircle(300, 151, 5, BLACK);
             if (!confirmButton) {
               buttonsSD[1].drawButton();
               confirmButton = 1;
@@ -163,12 +168,12 @@ void taskTouchscreenMenu(void* pvParameters) {
 
             selectedFile = 1;
           } else if (filecount > 2 &&
-                     (p.x >= 5 && p.x <= 315 && p.y >= 84 && p.y <= 112) &&
+                     (p.x >= 5 && p.x <= 315 && p.y >= 98 && p.y <= 133) &&
                      (selectedFile != 2)) {
-            tft.fillCircle(300, 42, 5, BLACK);
-            tft.fillCircle(300, 98, 5, WHITE);
-            tft.fillCircle(300, 70, 5, BLACK);
-            tft.fillCircle(300, 126, 5, BLACK);
+            tft.fillCircle(300, 46, 5, BLACK);
+            tft.fillCircle(300, 81, 5, BLACK);
+            tft.fillCircle(300, 116, 5, WHITE);
+            tft.fillCircle(300, 151, 5, BLACK);
             if (!confirmButton) {
               buttonsSD[1].drawButton();
               confirmButton = 1;
@@ -176,12 +181,12 @@ void taskTouchscreenMenu(void* pvParameters) {
 
             selectedFile = 2;
           } else if (filecount > 3 &&
-                     (p.x >= 5 && p.x <= 315 && p.y >= 112 && p.y <= 140) &&
+                     (p.x >= 5 && p.x <= 315 && p.y >= 133 && p.y <= 168) &&
                      (selectedFile != 3)) {
-            tft.fillCircle(300, 42, 5, BLACK);
-            tft.fillCircle(300, 70, 5, BLACK);
-            tft.fillCircle(300, 98, 5, BLACK);
-            tft.fillCircle(300, 126, 5, WHITE);
+            tft.fillCircle(300, 46, 5, BLACK);
+            tft.fillCircle(300, 81, 5, BLACK);
+            tft.fillCircle(300, 116, 5, BLACK);
+            tft.fillCircle(300, 151, 5, WHITE);
             if (!confirmButton) {
               buttonsSD[1].drawButton();
               confirmButton = 1;

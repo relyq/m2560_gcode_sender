@@ -8,12 +8,12 @@ void drawHomeScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
                     const char* currentFileName) {
   tft->fillScreen(BLACK);
 
-  buttonsHome[0].initButton(tft, 160, 25, 230, 40, WHITE, BLACK, WHITE,
-                            "Programas", 3);
+  buttonsHome[0].initButton(tft, 160, 30, 240, 60, WHITE, BLACK, WHITE,
+                            "Programas", 4);
   buttonsHome[0].drawButton();
 
-  buttonsHome[4].initButton(tft, 160, 70, 130, 40, WHITE, BLACK, WHITE, "Home",
-                            3);
+  buttonsHome[4].initButton(tft, 160, 95, 130, 60, WHITE, BLACK, WHITE, "Home",
+                            4);
   buttonsHome[4].drawButton();
 
   /*
@@ -35,12 +35,12 @@ void drawHomeScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
     buttonsHome[7].drawButton();
   */
   if (currentFileName) {
-    tft->setTextSize(2);
-    tft->setCursor(10, 240 - (CHARACTER_HEIGHT * 2) - 5);
+    tft->setTextSize(3);
+    tft->setCursor(0, 175 - (CHARACTER_HEIGHT * 3));
     tft->print(currentFileName);
 
-    buttonsHome[3].initButtonUL(tft, 190, 200, 130, 40, WHITE, GREEN, WHITE,
-                                "Inicio", 3);
+    buttonsHome[3].initButtonUL(tft, 0, 180, 160, 60, WHITE, GREEN, WHITE,
+                                "Inicio", 4);
     buttonsHome[3].drawRectButton();
   }
 }
@@ -143,17 +143,8 @@ void drawMoveScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsMove) {
   tft->setCursor(10, 240 - ((CHARACTER_HEIGHT + 2) * 2));
   tft->print(F("Z: 0.00"));
 
-  // 150, 210 // 5, 150 // 5, 5
-  buttonsMove[7].initButtonUL(tft, 5, 140, 60, 30, WHITE, BLACK, WHITE, "Cero",
-                              2);
-  buttonsMove[7].drawButton();
-
-  buttonsMove[8].initButtonUL(tft, 220, 175, 100, 30, WHITE, BLACK, WHITE,
-                              "Probe", 2);
-  buttonsMove[8].drawButton();
-
-  buttonsMove[0].initButtonUL(tft, 220, 210, 100, 30, WHITE, BLACK, WHITE,
-                              "Aceptar", 2);
+  buttonsMove[0].initButtonUL(tft, 220, 175, 100, 60, WHITE, BLACK, WHITE,
+                              "Volver", 2);
   buttonsMove[0].drawButton();
 }
 
@@ -166,9 +157,10 @@ void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
   tft->setCursor(0, 0);
   tft->print("Tarjeta SD");
 
+  tft->setTextSize(3);
   for (uint8_t i = 0; i < filecount; i++) {
-    tft->drawLine(5, 56 + 28 * i, 315, 56 + 28 * i, WHITE);
-    tft->setCursor(5, 35 + 28 * i);
+    tft->drawLine(5, 7 + 56 + 35 * i, 315, 7 + 56 + 35 * i, WHITE);
+    tft->setCursor(5, 35 + 35 * i);
     tft->print(filenames[i]);
   }
 
