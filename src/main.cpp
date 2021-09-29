@@ -24,6 +24,10 @@ QueueHandle_t qGcodeFile;
 QueueHandle_t qMachineStatus;
 
 TaskHandle_t hSerialPassthrough;
+TaskHandle_t hTouchscreenMenu;
+TaskHandle_t hGetStatus;
+TaskHandle_t hSendGcodeFile;
+TaskHandle_t hSendGcodeLine;
 
 void setup() {
   Serial.begin(115200);
@@ -56,12 +60,13 @@ void setup() {
 
   // priority 1
   xTaskCreate(taskTouchscreenMenu, "Touchscreen_Menu",
-              configMINIMAL_STACK_SIZE * 2, NULL, 1, NULL);
+              configMINIMAL_STACK_SIZE * 4, NULL, configMAX_PRIORITIES - 3,
+              &hTouchscreenMenu);
 
   // priority 2
   xTaskCreate(taskSendGcodeFile, "Send_Gcode_File",
               configMINIMAL_STACK_SIZE * 2, NULL, configMAX_PRIORITIES - 2,
-              NULL);
+              &hSendGcodeFile);
   xTaskCreate(taskSerialPassthrough, "Serial_Passthrough",
               configMINIMAL_STACK_SIZE, NULL, configMAX_PRIORITIES - 2,
               &hSerialPassthrough);
@@ -69,8 +74,10 @@ void setup() {
   // priority 3
   xTaskCreate(taskSendGcodeLine, "Send_Gcode_Line",
               configMINIMAL_STACK_SIZE * 2, NULL, configMAX_PRIORITIES - 1,
-              NULL);
+              &hSendGcodeLine);
   xTaskCreate(taskGetStatus, "Get_Status", configMINIMAL_STACK_SIZE, NULL,
+              configMAX_PRIORITIES - 1, &hGetStatus);
+  xTaskCreate(taskStackMonitor, "Stack_Monitor", configMINIMAL_STACK_SIZE, NULL,
               configMAX_PRIORITIES - 1, NULL);
 }
 

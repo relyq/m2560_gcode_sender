@@ -13,5 +13,6 @@ void taskSendGcodeLine(void* pvParameters);
 void taskSendGcodeFile(void* pvParameters);
 void taskSerialPassthrough(void* pvParameters);
 void taskGetStatus(void* pvParameters);
+void taskStackMonitor(void* pvParameters);
 
 #endif
