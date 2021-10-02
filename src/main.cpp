@@ -60,7 +60,7 @@ void setup() {
 
   // priority 1
   xTaskCreate(taskTouchscreenMenu, "Touchscreen_Menu",
-              configMINIMAL_STACK_SIZE * 4, NULL, configMAX_PRIORITIES - 3,
+              configMINIMAL_STACK_SIZE * 6, NULL, configMAX_PRIORITIES - 3,
               &hTouchscreenMenu);
 
   // priority 2
