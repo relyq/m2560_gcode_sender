@@ -232,7 +232,7 @@ void drawMoveScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsMove,
 }
 
 void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
-                  uint8_t filecount, char (*filenames)[20]) {
+                  uint8_t filecount, char** filenames) {
   tft->fillScreen(BLACK);
 
   tft->setTextSize(2);
@@ -240,7 +240,24 @@ void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
   tft->setCursor(0, 0);
   tft->print("Tarjeta SD");
 
-  for (uint8_t i = 0; i < filecount; i++) {
+  const uint8_t files_per_page = 6;
+  uint8_t page = 0;
+  uint8_t file_offset = files_per_page * page;
+  uint8_t page_last_file = files_per_page + file_offset;
+  // file_offset < i < page_last_file
+  // filecount = 12
+  // page 0:
+  // 0 < i < 6
+  // page 1:
+  // 6 < i < 12
+  // page 3:
+  // 12 < i < 18
+
+  // need file offset so index still corresponds to file array every page
+  // i think i can do some modulo magic somewhere
+  // file number % files_per_page = file number in page
+  for (size_t i = 0 + file_offset; i < page_last_file; i++) {
+    if (filecount <= i) break;
     tft->drawLine(5, 56 + 28 * i, 315, 56 + 28 * i, WHITE);
     tft->setCursor(5, 35 + 28 * i);
     tft->print(filenames[i]);

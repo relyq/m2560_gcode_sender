@@ -36,7 +36,7 @@ void taskTouchscreenMenu(void* pvParameters) {
 
   static uint8_t currentFile = 0xff;
   static uint8_t selectedFile = 0xff;
-  extern char files[5][20];
+  extern char** files;
   extern uint8_t filecount;
 
   bool fileSelected = 0;
@@ -133,6 +133,17 @@ void taskTouchscreenMenu(void* pvParameters) {
         }
         case Screens::SD: {
           static bool confirmButton = 0;
+          const uint8_t line_start[6] = {28, 56, 84, 112, 140, 168};
+          const uint8_t line_end[6] = {56, 84, 112, 140, 168, 196};
+          const uint8_t line_circle_y[6] = {
+              ((line_end[0] - line_start[0]) / 2) + line_start[0],
+              ((line_end[1] - line_start[1]) / 2) + line_start[1],
+              ((line_end[2] - line_start[2]) / 2) + line_start[2],
+              ((line_end[3] - line_start[3]) / 2) + line_start[3],
+              ((line_end[4] - line_start[4]) / 2) + line_start[4],
+              ((line_end[5] - line_start[5]) / 2) + line_start[5],
+          };
+          const uint16_t line_circle_x[2] = {300, 150};
 
           if (buttonsSD[0].contains(p.x, p.y)) {
             confirmButton = 0;
@@ -152,26 +163,31 @@ void taskTouchscreenMenu(void* pvParameters) {
             currentScreen = Screens::Home;
 
             drawHomeScreen(&tft, buttonsHome, files[currentFile]);
-
           } else if (filecount > 0 &&
-                     (p.x >= 5 && p.x <= 315 && p.y >= 28 && p.y <= 56) &&
+                     (p.x >= 5 && p.x <= 315 && p.y >= line_start[0] &&
+                      p.y <= line_end[0]) &&
                      (selectedFile != 0)) {
-            tft.fillCircle(300, 42, 5, WHITE);
-            tft.fillCircle(300, 70, 5, BLACK);
-            tft.fillCircle(300, 98, 5, BLACK);
-            tft.fillCircle(300, 126, 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[0], 5, WHITE);
+            tft.fillCircle(line_circle_x[0], line_circle_y[1], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[2], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[3], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[4], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[5], 5, BLACK);
             if (!confirmButton) {
               buttonsSD[1].drawButton();
               confirmButton = 1;
             }
             selectedFile = 0;
           } else if (filecount > 1 &&
-                     (p.x >= 5 && p.x <= 315 && p.y >= 56 && p.y <= 84) &&
+                     (p.x >= 5 && p.x <= 315 && p.y >= line_start[1] &&
+                      p.y <= line_end[1]) &&
                      (selectedFile != 1)) {
-            tft.fillCircle(300, 42, 5, BLACK);
-            tft.fillCircle(300, 70, 5, WHITE);
-            tft.fillCircle(300, 98, 5, BLACK);
-            tft.fillCircle(300, 126, 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[0], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[1], 5, WHITE);
+            tft.fillCircle(line_circle_x[0], line_circle_y[2], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[3], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[4], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[5], 5, BLACK);
             if (!confirmButton) {
               buttonsSD[1].drawButton();
               confirmButton = 1;
@@ -179,12 +195,15 @@ void taskTouchscreenMenu(void* pvParameters) {
 
             selectedFile = 1;
           } else if (filecount > 2 &&
-                     (p.x >= 5 && p.x <= 315 && p.y >= 84 && p.y <= 112) &&
+                     (p.x >= 5 && p.x <= 315 && p.y >= line_start[2] &&
+                      p.y <= line_end[2]) &&
                      (selectedFile != 2)) {
-            tft.fillCircle(300, 42, 5, BLACK);
-            tft.fillCircle(300, 98, 5, WHITE);
-            tft.fillCircle(300, 70, 5, BLACK);
-            tft.fillCircle(300, 126, 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[0], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[1], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[2], 5, WHITE);
+            tft.fillCircle(line_circle_x[0], line_circle_y[3], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[4], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[5], 5, BLACK);
             if (!confirmButton) {
               buttonsSD[1].drawButton();
               confirmButton = 1;
@@ -192,18 +211,53 @@ void taskTouchscreenMenu(void* pvParameters) {
 
             selectedFile = 2;
           } else if (filecount > 3 &&
-                     (p.x >= 5 && p.x <= 315 && p.y >= 112 && p.y <= 140) &&
+                     (p.x >= 5 && p.x <= 315 && p.y >= line_start[3] &&
+                      p.y <= line_end[3]) &&
                      (selectedFile != 3)) {
-            tft.fillCircle(300, 42, 5, BLACK);
-            tft.fillCircle(300, 70, 5, BLACK);
-            tft.fillCircle(300, 98, 5, BLACK);
-            tft.fillCircle(300, 126, 5, WHITE);
+            tft.fillCircle(line_circle_x[0], line_circle_y[0], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[1], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[2], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[3], 5, WHITE);
+            tft.fillCircle(line_circle_x[0], line_circle_y[4], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[5], 5, BLACK);
             if (!confirmButton) {
               buttonsSD[1].drawButton();
               confirmButton = 1;
             }
 
             selectedFile = 3;
+          } else if (filecount > 4 &&
+                     (p.x >= 5 && p.x <= 315 && p.y >= line_start[4] &&
+                      p.y <= line_end[4]) &&
+                     (selectedFile != 4)) {
+            tft.fillCircle(line_circle_x[0], line_circle_y[0], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[1], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[2], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[3], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[4], 5, WHITE);
+            tft.fillCircle(line_circle_x[0], line_circle_y[5], 5, BLACK);
+            if (!confirmButton) {
+              buttonsSD[1].drawButton();
+              confirmButton = 1;
+            }
+
+            selectedFile = 4;
+          } else if (filecount > 5 &&
+                     (p.x >= 5 && p.x <= 315 && p.y >= line_start[5] &&
+                      p.y <= line_end[5]) &&
+                     (selectedFile != 5)) {
+            tft.fillCircle(line_circle_x[0], line_circle_y[0], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[1], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[2], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[3], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[4], 5, BLACK);
+            tft.fillCircle(line_circle_x[0], line_circle_y[5], 5, WHITE);
+            if (!confirmButton) {
+              buttonsSD[1].drawButton();
+              confirmButton = 1;
+            }
+
+            selectedFile = 5;
           }
           break;
         }

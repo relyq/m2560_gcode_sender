@@ -16,7 +16,8 @@ SdFat SD;
 
 File root;
 
-char files[5][20];
+const uint8_t max_filename = 32;
+char** files;
 uint8_t filecount;
 
 QueueHandle_t qGcodeLine;
@@ -48,7 +49,10 @@ void setup() {
   SD.ls(LS_A | LS_DATE | LS_SIZE | LS_R);
 
   SD_getFileCount(root, &filecount);
-  for (uint8_t i = 0; i < filecount; i++) {
+  files = calloc(filecount, sizeof(char*));
+
+  for (size_t i = 0; i < filecount; i++) {
+    files[i] = calloc(max_filename, sizeof(char));
     SD_getFileName(root, i, files[i]);
   }
 
