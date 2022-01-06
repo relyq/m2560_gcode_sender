@@ -1,6 +1,8 @@
 // SCREENS
 #include "draw_screens.h"
 
+#include <math.h>
+
 #include "Arduino_FreeRTOS.h"
 #include "src/Adafruit_TFTLCD.h"
 
@@ -241,6 +243,9 @@ void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
   tft->print("Tarjeta SD");
 
   const uint8_t files_per_page = 6;
+
+  const uint8_t total_pages = ceil(filecount / files_per_page);
+
   uint8_t page = 0;
   uint8_t file_offset = files_per_page * page;
   uint8_t page_last_file = files_per_page + file_offset;
