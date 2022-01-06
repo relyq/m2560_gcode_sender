@@ -1,8 +1,8 @@
 # m2560_gcode_sender
 
-taskTouchscreenMenu.cpp:184: para saber se existe el archivo en la pantalla sd, filecount % files_per_page me dice cuantos archivos hay en la ultima pagina, además, si no estoy en la ultima pagina siempre van a existir todos los archivos que se pueden mostrar
+file explorer:<br>se deberia poder explorar adentro de carpetas
 
-la pantalla de SD deberia aceptar todos los archivos que hayan - deberia crear pantallas cuando se necesite para mostrar mas archivos
+hay mejores formas de saber si algun boton fue apretado, por ejemplo https://softwareengineering.stackexchange.com/questions/401661/whats-a-proper-way-to-design-a-gui-event-system#:~:text=It%20is%20better,this%2C%20not%20sure.
 
 siento que ninguna coordenada deberia estar hardcodeada. tengo que pensar en esto. quiza deberian ser constantes en un archivo separado (screen_defs) - esto me puede ayudar a relacionar distintos elementos del UI con la misma coordenada.
 
@@ -40,4 +40,8 @@ por qué drawSDScreen() funciona con char (*filenames)[20]? tengo otra forma de 
 
 <s>puedo hacer que cuando se toca la pantalla de trabajo terminado la máquina haga un homing cycle automáticamente</s>
 
-<s>control de movimiento</s
+<s>control de movimiento</s>
+
+<s>la pantalla de SD deberia aceptar todos los archivos que hayan - deberia crear pantallas cuando se necesite para mostrar mas archivos</s>
+
+<s>taskTouchscreenMenu.cpp:184: para saber se existe el archivo en la pantalla sd, filecount % files_per_page me dice cuantos archivos hay en la ultima pagina, además, si no estoy en la ultima pagina siempre van a existir todos los archivos que se pueden mostrar</s>

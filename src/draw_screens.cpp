@@ -266,10 +266,6 @@ void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
 
   if (total_pages > 1) {
     // multi page
-    buttonsSD[2].initButton(tft, 255, 175, 40, 40, WHITE, BLACK, WHITE, "<", 3);
-    buttonsSD[2].drawButton();
-    buttonsSD[3].initButton(tft, 300, 175, 40, 40, WHITE, BLACK, WHITE, ">", 3);
-    buttonsSD[3].drawButton();
     tft->setTextSize(2);
     for (size_t i = 0 + file_offset; i < page_last_file; i++) {
       if (filecount <= i) break;
@@ -278,6 +274,10 @@ void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
       tft->setCursor(5, 35 + 28 * i);
       tft->print(filenames[i]);
     }
+    buttonsSD[2].initButton(tft, 255, 175, 40, 40, WHITE, BLACK, WHITE, "<", 3);
+    buttonsSD[2].drawButton();
+    buttonsSD[3].initButton(tft, 300, 175, 40, 40, WHITE, BLACK, WHITE, ">", 3);
+    buttonsSD[3].drawButton();
   } else {
     // need file offset so index still corresponds to file array every page
     // i think i can do some modulo magic somewhere
