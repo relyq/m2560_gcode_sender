@@ -201,6 +201,11 @@ void taskTouchscreenMenu(void* pvParameters) {
                              line_circle_y[currentFile % files_per_page],
                              circle_r, WHITE);
             }
+            if (selectedFile > file_offset && selectedFile < page_last_file) {
+              tft.fillCircle(line_circle_x[selectedFile % files_per_page],
+                             line_circle_y[selectedFile % files_per_page],
+                             circle_r, WHITE);
+            }
           } else if (buttonsSD[3].contains(p.x, p.y) &&
                      current_page < total_pages - 1) {
             current_page++;
@@ -228,6 +233,11 @@ void taskTouchscreenMenu(void* pvParameters) {
             if (currentFile > file_offset && currentFile < page_last_file) {
               tft.fillCircle(line_circle_x[currentFile % files_per_page],
                              line_circle_y[currentFile % files_per_page],
+                             circle_r, WHITE);
+            }
+            if (selectedFile > file_offset && selectedFile < page_last_file) {
+              tft.fillCircle(line_circle_x[selectedFile % files_per_page],
+                             line_circle_y[selectedFile % files_per_page],
                              circle_r, WHITE);
             }
 
