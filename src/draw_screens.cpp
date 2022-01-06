@@ -244,10 +244,9 @@ void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
 
   const uint8_t files_per_page = 6;
 
-  const uint8_t total_pages = ceil(filecount / files_per_page);
-
-  uint8_t page = 0;
-  uint8_t file_offset = files_per_page * page;
+  const uint8_t total_pages = ceil((double)filecount / (double)files_per_page);
+  uint8_t current_page = 0;
+  uint8_t file_offset = files_per_page * current_page;
   uint8_t page_last_file = files_per_page + file_offset;
   // file_offset < i < page_last_file
   // filecount = 12
@@ -258,14 +257,38 @@ void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
   // page 3:
   // 12 < i < 18
 
-  // need file offset so index still corresponds to file array every page
-  // i think i can do some modulo magic somewhere
-  // file number % files_per_page = file number in page
-  for (size_t i = 0 + file_offset; i < page_last_file; i++) {
-    if (filecount <= i) break;
-    tft->drawLine(5, 56 + 28 * i, 315, 56 + 28 * i, WHITE);
-    tft->setCursor(5, 35 + 28 * i);
-    tft->print(filenames[i]);
+  // cursor should change depending on string length
+  tft->setTextSize(2);
+  tft->setCursor(280, 0);
+  tft->print(current_page + 1);
+  tft->print("/");
+  tft->print(total_pages);
+
+  if (total_pages > 1) {
+    // multi page
+    buttonsSD[2].initButton(tft, 255, 175, 40, 40, WHITE, BLACK, WHITE, "<", 3);
+    buttonsSD[2].drawButton();
+    buttonsSD[3].initButton(tft, 300, 175, 40, 40, WHITE, BLACK, WHITE, ">", 3);
+    buttonsSD[3].drawButton();
+    tft->setTextSize(2);
+    for (size_t i = 0 + file_offset; i < page_last_file; i++) {
+      if (filecount <= i) break;
+      uint16_t line_x = i - file_offset < 4 ? 315 : 230;
+      tft->drawLine(5, 56 + 28 * i, line_x, 56 + 28 * i, WHITE);
+      tft->setCursor(5, 35 + 28 * i);
+      tft->print(filenames[i]);
+    }
+  } else {
+    // need file offset so index still corresponds to file array every page
+    // i think i can do some modulo magic somewhere
+    // absolute file number % files_per_page = file number in current_page
+    tft->setTextSize(2);
+    for (size_t i = 0 + file_offset; i < page_last_file; i++) {
+      if (filecount <= i) break;
+      tft->drawLine(5, 56 + 28 * i, 315, 56 + 28 * i, WHITE);
+      tft->setCursor(5, 35 + 28 * i);
+      tft->print(filenames[i]);
+    }
   }
 
   buttonsSD[0].initButton(tft, 80, 220, 160, 40, WHITE, BLACK, WHITE, "Volver",
