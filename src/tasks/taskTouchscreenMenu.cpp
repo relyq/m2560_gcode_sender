@@ -60,6 +60,9 @@ void taskTouchscreenMenu(void* pvParameters) {
       break;
     }
     case 0xC0C0: {  // 0x9341
+      DEBUG_PRINT(F("UNRECOGNIZED DRIVER (0x"));
+      DEBUG_PRINTHEX(lcd_id);
+      DEBUG_PRINTLN(F(") USING 0x9341 DRIVER"));
       lcd_id = 0x9341;
       lcd_rotation = 3;
       break;
@@ -99,6 +102,11 @@ void taskTouchscreenMenu(void* pvParameters) {
 
       pinMode(XM, OUTPUT);
       pinMode(YP, OUTPUT);
+
+      DEBUG_PRINT(F("x: "));
+      DEBUG_PRINT(p.x);
+      DEBUG_PRINT(F("\ty: "));
+      DEBUG_PRINTLN(p.y);
 
       p.y = map(pointTmp.x, TS_MINX, TS_MAXX, tft.height(), 0);
       p.x = map(pointTmp.y, TS_MINY, TS_MAXY - 60, 0, tft.width());
