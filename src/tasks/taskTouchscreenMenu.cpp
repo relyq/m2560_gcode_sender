@@ -103,11 +103,6 @@ void taskTouchscreenMenu(void* pvParameters) {
       pinMode(XM, OUTPUT);
       pinMode(YP, OUTPUT);
 
-      DEBUG_PRINT(F("x: "));
-      DEBUG_PRINT(p.x);
-      DEBUG_PRINT(F("\ty: "));
-      DEBUG_PRINTLN(p.y);
-
       p.y = map(pointTmp.x, TS_MINX, TS_MAXX, tft.height(), 0);
       p.x = map(pointTmp.y, TS_MINY, TS_MAXY - 60, 0, tft.width());
 
