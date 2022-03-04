@@ -45,6 +45,9 @@ void taskTouchscreenMenu(void* pvParameters) {
       break;
     }
     case 0xC0C0: {  // 0x9341
+      DEBUG_PRINT(F("UNRECOGNIZED DRIVER (0x"));
+      DEBUG_PRINTHEX(lcd_id);
+      DEBUG_PRINTLN(F(") USING 0x9341 DRIVER"));
       lcd_id = 0x9341;
       lcd_rotation = 3;
       break;
