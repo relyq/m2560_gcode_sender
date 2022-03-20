@@ -2,6 +2,8 @@
 
 en vez de que SendGcodeFile y SendGcodeLine sean de mayor prioridad y bloqueen la pantalla tactil, cuando inicia SendGcodeFile debería suspender TouchscreenMenu y reanudarla cuando termine de enviar el archivo
 
+podria hacer una pantalla de "enviando trabajo 0-100%" que avance dependiendo de la linea por la que va el gcode
+
 file explorer:<br>se deberia poder explorar adentro de carpetas
 
 hay mejores formas de saber si algun boton fue apretado, por ejemplo https://softwareengineering.stackexchange.com/questions/401661/whats-a-proper-way-to-design-a-gui-event-system#:~:text=It%20is%20better,this%2C%20not%20sure.
