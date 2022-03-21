@@ -8,7 +8,7 @@ extern QueueHandle_t qGcodeLine;
 extern SdFat SD;
 
 void taskSendGcodeFile(void* pvParameters) {
-  char filename[16];
+  char filename[MAX_FILENAME];
   char gcodeLine[128];
   int n;
   while (1) {

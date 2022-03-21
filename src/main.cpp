@@ -16,7 +16,7 @@ SdFat SD;
 
 File root;
 
-char files[5][20];
+char** files;
 uint8_t filecount;
 
 QueueHandle_t qGcodeLine;
@@ -44,14 +44,17 @@ void setup() {
   SD.ls(LS_A | LS_DATE | LS_SIZE | LS_R);
 
   SD_getFileCount(root, &filecount);
-  for (uint8_t i = 0; i < filecount; i++) {
+  files = calloc(filecount, sizeof(char*));
+
+  for (size_t i = 0; i < filecount; i++) {
+    files[i] = calloc(MAX_FILENAME, sizeof(char));
     SD_getFileName(root, i, files[i]);
   }
 
   root.close();
 
   qGcodeLine = xQueueCreate(1, 128);
-  qGcodeFile = xQueueCreate(1, sizeof(char) * 16);
+  qGcodeFile = xQueueCreate(1, sizeof(char) * MAX_FILENAME);
   qMachineStatus = xQueueCreate(1, sizeof(struct Status));
 
   // priority 1

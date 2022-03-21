@@ -25,7 +25,7 @@ void taskTouchscreenMenu(void* pvParameters) {
 
   static uint8_t currentFile = 0xff;
   static uint8_t selectedFile = 0xff;
-  extern char files[5][20];
+  extern char** files;
   extern uint8_t filecount;
 
   bool fileSelected = 0;
@@ -274,7 +274,7 @@ void taskTouchscreenMenu(void* pvParameters) {
           break;
         }
         case Screens::Done: {
-          xQueueSend(qGcodeLine, "G53G0X-184Y-349Z-1\n", portMAX_DELAY);
+          xQueueSend(qGcodeLine, "G53G0X-150Y-300Z-1\n", portMAX_DELAY);
           currentScreen = Screens::Home;
           drawHomeScreen(&tft, buttonsHome, files[currentFile]);
         }

@@ -27,6 +27,10 @@
 #define BUTTON_TEXTSIZE 3
 #define TITLE_TEXTSIZE 2
 
+#define MAX_FILENAME 32
+#define MAX_FILENAME_SD 16
+#define MAX_FILENAME_HOME 16
+
 enum class Screens { Home, SD, Move, Config, Done };
 
 struct Status {

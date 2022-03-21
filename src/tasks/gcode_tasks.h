@@ -7,6 +7,7 @@
 #include <task.h>
 
 #include "DEBUG_things.h"
+#include "common_defs.h"
 
 void taskTouchscreenMenu(void* pvParameters);
 void taskSendGcodeLine(void* pvParameters);

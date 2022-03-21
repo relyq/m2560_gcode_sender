@@ -35,9 +35,13 @@ void drawHomeScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
     buttonsHome[7].drawButton();
   */
   if (currentFileName) {
+    char buffer[MAX_FILENAME_HOME + 1];
+    buffer[MAX_FILENAME_HOME] = '\0';
+    strncpy(buffer, currentFileName, MAX_FILENAME_HOME);
+
     tft->setTextSize(3);
     tft->setCursor(0, 175 - (CHARACTER_HEIGHT * 3));
-    tft->print(currentFileName);
+    tft->print(buffer);
 
     buttonsHome[3].initButtonUL(tft, 0, 180, 160, 60, WHITE, GREEN, WHITE,
                                 "Inicio", 4);
@@ -149,7 +153,7 @@ void drawMoveScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsMove) {
 }
 
 void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
-                  uint8_t filecount, char (*filenames)[20]) {
+                  uint8_t filecount, char** filenames) {
   tft->fillScreen(BLACK);
 
   tft->setTextSize(2);
@@ -158,10 +162,15 @@ void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
   tft->print("Tarjeta SD");
 
   tft->setTextSize(3);
+
+  char buffer[MAX_FILENAME_SD + 1];
+  buffer[MAX_FILENAME_SD] = '\0';
+
   for (uint8_t i = 0; i < filecount; i++) {
     tft->drawLine(5, 7 + 56 + 35 * i, 315, 7 + 56 + 35 * i, WHITE);
     tft->setCursor(5, 35 + 35 * i);
-    tft->print(filenames[i]);
+    strncpy(buffer, filenames[i], MAX_FILENAME_SD);
+    tft->print(buffer);
   }
 
   buttonsSD[0].initButton(tft, 80, 220, 160, 40, WHITE, BLACK, WHITE, "Volver",
