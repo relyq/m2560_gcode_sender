@@ -39,9 +39,13 @@ void drawHomeScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
   buttonsHome[7].drawButton();
 
   if (currentFileName) {
+    char buffer[MAX_FILENAME_HOME + 1];
+    buffer[MAX_FILENAME_HOME] = '\0';
+    strncpy(buffer, currentFileName, MAX_FILENAME_HOME);
+
     tft->setTextSize(2);
     tft->setCursor(10, 240 - (CHARACTER_HEIGHT * 2) - 5);
-    tft->print(currentFileName);
+    tft->print(buffer);
 
     buttonsHome[3].initButtonUL(tft, 190, 200, 130, 40, WHITE, GREEN, WHITE,
                                 "Inicio", 3);
@@ -264,6 +268,9 @@ void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
   tft->print("/");
   tft->print(total_pages);
 
+  char buffer[MAX_FILENAME_SD + 1];
+  buffer[MAX_FILENAME_SD] = '\0';
+
   if (total_pages > 1) {
     // multi page
     tft->setTextSize(2);
@@ -272,7 +279,8 @@ void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
       uint16_t line_x = i - file_offset < 4 ? 315 : 230;
       tft->drawLine(5, 56 + 28 * i, line_x, 56 + 28 * i, WHITE);
       tft->setCursor(5, 35 + 28 * i);
-      tft->print(filenames[i]);
+      strncpy(buffer, filenames[i], MAX_FILENAME_SD);
+      tft->print(buffer);
     }
     buttonsSD[2].initButton(tft, 255, 175, 40, 40, WHITE, BLACK, WHITE, "<", 3);
     buttonsSD[2].drawButton();
@@ -287,7 +295,8 @@ void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
       if (filecount <= i) break;
       tft->drawLine(5, 56 + 28 * i, 315, 56 + 28 * i, WHITE);
       tft->setCursor(5, 35 + 28 * i);
-      tft->print(filenames[i]);
+      strncpy(buffer, filenames[i], MAX_FILENAME_SD);
+      tft->print(buffer);
     }
   }
 

@@ -1,6 +1,9 @@
 #include "SD_things.h"
 
 #include "DEBUG_things.h"
+#include "common_defs.h"
+
+// both functions below should have a uint8_t size parameter for the buffer size
 
 int8_t SD_getFileName(File dir, uint8_t fnum, char* buffer) {
   if (!dir || !buffer) {
@@ -19,11 +22,12 @@ int8_t SD_getFileName(File dir, uint8_t fnum, char* buffer) {
       return 1;
     }
 
-    char file_name[16];
-    f.getName(file_name, 16);
+    char file_name[MAX_FILENAME];
+    f.getName(file_name, MAX_FILENAME);
 
-    if (strcmp(file_name, "System Volume I")) {  // debe haber una mejor manera
-                                                 // de evitar que pase esto
+    if (strcmp(file_name,
+               "System Volume Information")) {  // debe haber una mejor manera
+                                                // de evitar que pase esto
       if (i == fnum) {
         strcpy(buffer, file_name);
 
@@ -53,10 +57,10 @@ int8_t SD_getFileCount(File dir, uint8_t* fnum) {
       return 0;
     }
 
-    char file_name[16];
-    f.getName(file_name, 16);
+    char file_name[MAX_FILENAME];
+    f.getName(file_name, MAX_FILENAME);
 
-    if (strcmp(file_name, "System Volume I")) {
+    if (strcmp(file_name, "System Volume Information")) {
       i++;
     }
   }
