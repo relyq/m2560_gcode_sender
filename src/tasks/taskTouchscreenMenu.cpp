@@ -139,7 +139,8 @@ void taskTouchscreenMenu(void* pvParameters) {
             // send file
             drawHomeScreen(&tft, buttonsHome, files[currentFile]);
             xQueueSend(qGcodeFile, files[currentFile], portMAX_DELAY);
-            xQueueSend(qGcodeLine, "G28\n", portMAX_DELAY);
+            xQueueSend(qGcodeLine, "G53G0X-269Y-199\n",
+                       portMAX_DELAY);  // go to end position to remove piece
 
             tft.fillScreen(BLACK);
             tft.setTextSize(3);
@@ -274,7 +275,9 @@ void taskTouchscreenMenu(void* pvParameters) {
           break;
         }
         case Screens::Done: {
-          xQueueSend(qGcodeLine, "G53G0X-150Y-300Z-1\n", portMAX_DELAY);
+          xQueueSend(
+              qGcodeLine, "G53G0X-399Y-499Z-1\n",
+              portMAX_DELAY);  // go to zero without touching limit switches
           currentScreen = Screens::Home;
           drawHomeScreen(&tft, buttonsHome, files[currentFile]);
         }
