@@ -1,11 +1,11 @@
 #include "DEBUG_things.h"
 #include "common_defs.h"
-#include "draw_screens.h"
 #include "gcode_tasks.h"
 #include "src/Adafruit_GFX.h"     // Core graphics library
 #include "src/Adafruit_TFTLCD.h"  // Hardware-specific library
 #include "src/TouchScreen.h"
 #include "touchscreen_config.h"
+#include "views/draw_screens.h"
 
 extern QueueHandle_t qGcodeLine;
 extern QueueHandle_t qGcodeFile;

@@ -5,6 +5,7 @@
 
 #include "DEBUG_things.h"
 #include "common_defs.h"
+#include "src/Adafruit_TFTLCD.h"
 
 class Adafruit_TFTLCD;
 class Adafruit_GFX_Button;

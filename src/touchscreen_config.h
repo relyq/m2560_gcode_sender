@@ -12,8 +12,8 @@
 #define LCD_RESET A4  // Can alternately just connect to Arduino's reset pin
 
 // touchscreen
-#define TS0 0
-#define TS1 1
+#define TS0 1
+#define TS1 0
 #if TS0
 #define YP A3   // must be an analog pin // LCD CS
 #define XM A2   // must be an analog pin // LCD RS - COMMAND/DATA
