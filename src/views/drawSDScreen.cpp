@@ -1,7 +1,8 @@
 #include "draw_screens.h"
 
 void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
-                  uint8_t filecount, char** filenames) {
+                  uint8_t filecount, char** filenames,
+                  const uint8_t currentFile) {
   DEBUG_PRINTLN("drawing file explorer");
   tft->fillScreen(BLACK);
 
@@ -31,6 +32,10 @@ void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
   tft->print(current_page + 1);
   tft->print("/");
   tft->print(total_pages);
+
+  if (currentFile < files_per_page) {
+    tft->fillCircle(300, 42 + 28 * currentFile, 5, WHITE);
+  }
 
   char buffer[MAX_FILENAME_SD + 1];
   buffer[MAX_FILENAME_SD] = '\0';
