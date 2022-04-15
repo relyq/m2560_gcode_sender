@@ -4,6 +4,24 @@
 
 #include "controllers.h"
 
+#define BUTTON_BACK 0
+#define BUTTON_YP 1
+#define BUTTON_YN 2
+#define BUTTON_XP 3
+#define BUTTON_XN 4
+#define BUTTON_ZP 5
+#define BUTTON_ZN 6
+#define BUTTON_ZPLUS 7
+#define BUTTON_ZMINUS 8
+#define BUTTON_ZMULTIPLIER 9
+#define BUTTON_ZDIVIDER 10
+#define BUTTON_UNUSED 11  // ??
+#define BUTTON_XYPLUS 12
+#define BUTTON_XYMINUS 13
+#define BUTTON_XYMULTIPLIER 14
+#define BUTTON_XYDIVIDER 15
+#define BUTTON_COUNT (BUTTON_XYDIVIDER + 1)
+
 double stepsXY = 10;
 double stepsZ = 1;
 static uint16_t feedrate = 200;
@@ -22,6 +40,15 @@ extern QueueHandle_t qGcodeLine;
 
 void moveController(Adafruit_GFX* tft, Adafruit_GFX_Button* buttonsMove,
                     Adafruit_GFX_Button* buttonsHome, const TSPoint p) {
+  uint8_t pressed_button = 0xff;
+
+  for (size_t i_btn = 0; i_btn < BUTTON_COUNT; i_btn++) {
+    if (buttonsMove[i_btn].contains(p.x, p.y)) {
+      pressed_button = i_btn;
+      break;
+    }
+  }
+
   char str_rapid[10] = "G91 G1 F";
   char str_tmp[64];
   char command[128];
@@ -34,123 +61,154 @@ void moveController(Adafruit_GFX* tft, Adafruit_GFX_Button* buttonsMove,
 
   tft->setTextColor(WHITE, BLACK);
 
-  if (buttonsMove[0].contains(p.x, p.y)) {
-    currentScreen = Screens::Home;
-    if (!fileSelected) {
-      drawHomeScreen(tft, buttonsHome, NULL);
-      return;
-    } else {
-      drawHomeScreen(tft, buttonsHome, files[currentFile]);
-      return;
+  switch (pressed_button) {
+    case BUTTON_BACK: {
+      currentScreen = Screens::Home;
+      if (!fileSelected) {
+        drawHomeScreen(tft, buttonsHome, NULL);
+        return;
+      } else {
+        drawHomeScreen(tft, buttonsHome, files[currentFile]);
+        return;
+      }
+      break;
     }
-  } else if (buttonsMove[1].contains(p.x, p.y)) {
-    // y+
-    sprintf(str_tmp, "Y%f\n", stepsXY);
-    strcat(command, str_tmp);
-    xQueueSend(qGcodeLine, command, portMAX_DELAY);
-  } else if (buttonsMove[2].contains(p.x, p.y)) {
-    // y-
-    sprintf(str_tmp, "Y-%f\n", stepsXY);
-    strcat(command, str_tmp);
-    xQueueSend(qGcodeLine, command, portMAX_DELAY);
-  } else if (buttonsMove[3].contains(p.x, p.y)) {
-    // x+
-    sprintf(str_tmp, "X%f\n", stepsXY);
-    strcat(command, str_tmp);
-    xQueueSend(qGcodeLine, command, portMAX_DELAY);
-  } else if (buttonsMove[4].contains(p.x, p.y)) {
-    // x-
-    sprintf(str_tmp, "X-%f\n", stepsXY);
-    strcat(command, str_tmp);
-    xQueueSend(qGcodeLine, command, portMAX_DELAY);
-  } else if (buttonsMove[5].contains(p.x, p.y)) {
-    // z+
-    sprintf(str_tmp, "Z%f\n", stepsZ);
-    strcat(command, str_tmp);
-    xQueueSend(qGcodeLine, command, portMAX_DELAY);
-  } else if (buttonsMove[6].contains(p.x, p.y)) {
-    // z-
-    sprintf(str_tmp, "Z-%f\n", stepsZ);
-    strcat(command, str_tmp);
-    xQueueSend(qGcodeLine, command, portMAX_DELAY);
-  } else if (buttonsMove[7].contains(p.x, p.y)) {
-    // z+1
-    stepsZ = stepsZ + step_multiplierZ;
-    if (stepsZ > step_multiplierZ * 9) {
-      step_multiplierZ = step_multiplierZ * 10;
+    case BUTTON_YP: {
+      // y+
+      sprintf(str_tmp, "Y%f\n", stepsXY);
+      strcat(command, str_tmp);
+      xQueueSend(qGcodeLine, command, portMAX_DELAY);
+      break;
     }
-    if (stepsZ > max_stepsZ) {
-      stepsZ = max_stepsZ;
+    case BUTTON_YN: {
+      // y-
+      sprintf(str_tmp, "Y-%f\n", stepsXY);
+      strcat(command, str_tmp);
+      xQueueSend(qGcodeLine, command, portMAX_DELAY);
+      break;
     }
-
-  } else if (buttonsMove[8].contains(p.x, p.y)) {
-    // z-1
-    if (stepsZ > min_steps) {
-      if (stepsZ <= step_multiplierZ * 1.5) {
+    case BUTTON_XP: {
+      // x+
+      sprintf(str_tmp, "X%f\n", stepsXY);
+      strcat(command, str_tmp);
+      xQueueSend(qGcodeLine, command, portMAX_DELAY);
+      break;
+    }
+    case BUTTON_XN: {
+      // x-
+      sprintf(str_tmp, "X-%f\n", stepsXY);
+      strcat(command, str_tmp);
+      xQueueSend(qGcodeLine, command, portMAX_DELAY);
+      break;
+    }
+    case BUTTON_ZP: {
+      // z+
+      sprintf(str_tmp, "Z%f\n", stepsZ);
+      strcat(command, str_tmp);
+      xQueueSend(qGcodeLine, command, portMAX_DELAY);
+      break;
+    }
+    case BUTTON_ZN: {
+      // z-
+      sprintf(str_tmp, "Z-%f\n", stepsZ);
+      strcat(command, str_tmp);
+      xQueueSend(qGcodeLine, command, portMAX_DELAY);
+      break;
+    }
+    case BUTTON_ZPLUS: {
+      // z+1
+      stepsZ = stepsZ + step_multiplierZ;
+      if (stepsZ > step_multiplierZ * 9) {
+        step_multiplierZ = step_multiplierZ * 10;
+      }
+      if (stepsZ > max_stepsZ) {
+        stepsZ = max_stepsZ;
+      }
+      break;
+    }
+    case BUTTON_ZMINUS: {
+      // z-1
+      if (stepsZ > min_steps) {
+        if (stepsZ <= step_multiplierZ * 1.5) {
+          step_multiplierZ = step_multiplierZ / 10;
+        }
+        stepsZ = stepsZ - step_multiplierZ;
+      }
+      break;
+    }
+    case BUTTON_ZMULTIPLIER: {
+      // zx10
+      if (stepsZ * 10 >= max_stepsZ) {
+        stepsZ = max_stepsZ;
+        step_multiplierZ = max_multiplierZ;
+      } else {
+        stepsZ = stepsZ * 10;
+        step_multiplierZ = step_multiplierZ * 10;
+      }
+      break;
+    }
+    case BUTTON_ZDIVIDER: {
+      // z/10
+      if (stepsZ / 10 > min_steps) {
+        stepsZ = stepsZ / 10;
         step_multiplierZ = step_multiplierZ / 10;
+      } else {
+        stepsZ = min_steps;
+        step_multiplierZ = min_steps;
       }
-      stepsZ = stepsZ - step_multiplierZ;
+      break;
     }
-
-  } else if (buttonsMove[9].contains(p.x, p.y)) {
-    // zx10
-    if (stepsZ * 10 >= max_stepsZ) {
-      stepsZ = max_stepsZ;
-      step_multiplierZ = max_multiplierZ;
-    } else {
-      stepsZ = stepsZ * 10;
-      step_multiplierZ = step_multiplierZ * 10;
+    case BUTTON_UNUSED: {
+      break;
     }
-
-  } else if (buttonsMove[10].contains(p.x, p.y)) {
-    // z/10
-    if (stepsZ / 10 > min_steps) {
-      stepsZ = stepsZ / 10;
-      step_multiplierZ = step_multiplierZ / 10;
-    } else {
-      stepsZ = min_steps;
-      step_multiplierZ = min_steps;
+    case BUTTON_XYPLUS: {
+      // xy+1
+      stepsXY = stepsXY + step_multiplierXY;
+      if (stepsXY > step_multiplierXY * 9) {
+        step_multiplierXY = step_multiplierXY * 10;
+      }
+      if (stepsXY > max_stepsXY) {
+        stepsXY = max_stepsXY;
+      }
+      break;
     }
-
-  } else if (buttonsMove[12].contains(p.x, p.y)) {
-    // xy+1
-    stepsXY = stepsXY + step_multiplierXY;
-    if (stepsXY > step_multiplierXY * 9) {
-      step_multiplierXY = step_multiplierXY * 10;
+    case BUTTON_XYMINUS: {
+      // xy-1
+      if (stepsXY > min_steps) {
+        if (stepsXY <= step_multiplierXY * 1.5) {
+          step_multiplierXY = step_multiplierXY / 10;
+        }
+        stepsXY = stepsXY - step_multiplierXY;
+      }
+      break;
     }
-    if (stepsXY > max_stepsXY) {
-      stepsXY = max_stepsXY;
+    case BUTTON_XYMULTIPLIER: {
+      // xyx10
+      if (stepsXY * 10 >= max_stepsXY) {
+        stepsXY = max_stepsXY;
+        step_multiplierXY = max_multiplierXY;
+      } else {
+        stepsXY = stepsXY * 10;
+        step_multiplierXY = step_multiplierXY * 10;
+      }
+      break;
     }
-
-  } else if (buttonsMove[13].contains(p.x, p.y)) {
-    // xy-1
-    if (stepsXY > min_steps) {
-      if (stepsXY <= step_multiplierXY * 1.5) {
+    case BUTTON_XYDIVIDER: {
+      // xy/10
+      if (stepsXY / 10 > min_steps) {
+        stepsXY = stepsXY / 10;
         step_multiplierXY = step_multiplierXY / 10;
+      } else {
+        stepsXY = min_steps;
+        step_multiplierXY = min_steps;
       }
-      stepsXY = stepsXY - step_multiplierXY;
+      break;
     }
 
-  } else if (buttonsMove[14].contains(p.x, p.y)) {
-    // xyx10
-    if (stepsXY * 10 >= max_stepsXY) {
-      stepsXY = max_stepsXY;
-      step_multiplierXY = max_multiplierXY;
-    } else {
-      stepsXY = stepsXY * 10;
-      step_multiplierXY = step_multiplierXY * 10;
-    }
-
-  } else if (buttonsMove[15].contains(p.x, p.y)) {
-    // xy/10
-    if (stepsXY / 10 > min_steps) {
-      stepsXY = stepsXY / 10;
-      step_multiplierXY = step_multiplierXY / 10;
-    } else {
-      stepsXY = min_steps;
-      step_multiplierXY = min_steps;
-    }
+    default:
+      break;
   }
+
   sprintf(str_stepsXY, "%.2f ", stepsXY);
   sprintf(str_stepsZ, "%.2f ", stepsZ);
   tft->setCursor(90, 140);
