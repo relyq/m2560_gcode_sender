@@ -22,9 +22,12 @@
 #define BUTTON_XYDIVIDER 15
 #define BUTTON_COUNT (BUTTON_XYDIVIDER + 1)
 
+typedef enum AxisDir { ZN = -3, YN, XN, NULLAXIS = 0, XP, YP, ZP } AxisDir;
+
+static void move_axis(AxisDir axis, double steps, uint16_t feedrate);
+
 double stepsXY = 10;
 double stepsZ = 1;
-static uint16_t feedrate = 200;
 static double step_multiplierXY = 10;
 static double step_multiplierZ = 1;
 static const uint8_t max_multiplierZ = 10;
@@ -49,15 +52,7 @@ void moveController(Adafruit_GFX* tft, Adafruit_GFX_Button* buttonsMove,
     }
   }
 
-  char str_rapid[10] = "G91 G1 F";
-  char str_tmp[64];
-  char command[128];
-  char str_stepsXY[16];
-  char str_stepsZ[16];
-
-  strcpy(command, str_rapid);
-  sprintf(str_tmp, "%d ", feedrate);
-  strcat(command, str_tmp);
+  uint16_t feedrate = 200;
 
   tft->setTextColor(WHITE, BLACK);
 
@@ -73,46 +68,28 @@ void moveController(Adafruit_GFX* tft, Adafruit_GFX_Button* buttonsMove,
       }
       break;
     }
-    case BUTTON_YP: {
-      // y+
-      sprintf(str_tmp, "Y%f\n", stepsXY);
-      strcat(command, str_tmp);
-      xQueueSend(qGcodeLine, command, portMAX_DELAY);
-      break;
-    }
-    case BUTTON_YN: {
-      // y-
-      sprintf(str_tmp, "Y-%f\n", stepsXY);
-      strcat(command, str_tmp);
-      xQueueSend(qGcodeLine, command, portMAX_DELAY);
+    case BUTTON_XN: {
+      move_axis(AxisDir::XN, stepsXY, feedrate);
       break;
     }
     case BUTTON_XP: {
-      // x+
-      sprintf(str_tmp, "X%f\n", stepsXY);
-      strcat(command, str_tmp);
-      xQueueSend(qGcodeLine, command, portMAX_DELAY);
+      move_axis(AxisDir::XP, stepsXY, feedrate);
       break;
     }
-    case BUTTON_XN: {
-      // x-
-      sprintf(str_tmp, "X-%f\n", stepsXY);
-      strcat(command, str_tmp);
-      xQueueSend(qGcodeLine, command, portMAX_DELAY);
+    case BUTTON_YN: {
+      move_axis(AxisDir::YN, stepsXY, feedrate);
       break;
     }
-    case BUTTON_ZP: {
-      // z+
-      sprintf(str_tmp, "Z%f\n", stepsZ);
-      strcat(command, str_tmp);
-      xQueueSend(qGcodeLine, command, portMAX_DELAY);
+    case BUTTON_YP: {
+      move_axis(AxisDir::YP, stepsXY, feedrate);
       break;
     }
     case BUTTON_ZN: {
-      // z-
-      sprintf(str_tmp, "Z-%f\n", stepsZ);
-      strcat(command, str_tmp);
-      xQueueSend(qGcodeLine, command, portMAX_DELAY);
+      move_axis(AxisDir::ZN, stepsZ, feedrate);
+      break;
+    }
+    case BUTTON_ZP: {
+      move_axis(AxisDir::ZP, stepsZ, feedrate);
       break;
     }
     case BUTTON_ZPLUS: {
@@ -209,12 +186,10 @@ void moveController(Adafruit_GFX* tft, Adafruit_GFX_Button* buttonsMove,
       break;
   }
 
-  sprintf(str_stepsXY, "%.2f ", stepsXY);
-  sprintf(str_stepsZ, "%.2f ", stepsZ);
   tft->setCursor(90, 140);
-  tft->print(str_stepsXY);
+  tft->print(stepsXY, 2);
   tft->setCursor(220, 140);
-  tft->print(str_stepsZ);
+  tft->print(stepsZ, 2);
 
   DEBUG_PRINT("stepxy: ");
   DEBUG_PRINTLN(stepsXY);
@@ -226,4 +201,39 @@ void moveController(Adafruit_GFX* tft, Adafruit_GFX_Button* buttonsMove,
   DEBUG_PRINTLN(step_multiplierZ);
 
   vTaskDelay(pdMS_TO_TICKS(100));
+}
+
+static void move_axis(AxisDir axis, double steps, uint16_t feedrate) {
+  const char str_rapid[10] = "G91 G1 F";
+  char command[128];
+  char str_axis[3];
+
+  switch (axis) {
+    case XN:
+      strcpy(str_axis, "X-");
+      break;
+    case XP:
+      strcpy(str_axis, "X");
+      break;
+    case YN:
+      strcpy(str_axis, "Y-");
+      break;
+    case YP:
+      strcpy(str_axis, "Y");
+      break;
+    case ZN:
+      strcpy(str_axis, "Z-");
+      break;
+    case ZP:
+      strcpy(str_axis, "Z");
+      break;
+
+    default:
+      return;
+      break;
+  }
+
+  sprintf(command, "%s%d %s%f\n", str_rapid, feedrate, str_axis, steps);
+
+  xQueueSend(qGcodeLine, command, portMAX_DELAY);
 }
