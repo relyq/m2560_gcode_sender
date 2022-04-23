@@ -78,12 +78,12 @@ void taskTouchscreenMenu(void* pvParameters) {
   while (1) {
     TSPoint p = ts.getPoint();
 
+    pinMode(XM, OUTPUT);
+    pinMode(YP, OUTPUT);
+
     if (p.z > MINPRESSURE) {
       // el modulo tactil tiene 60 puntos no dibujables en la pantalla
       TSPoint pointTmp = p;
-
-      pinMode(XM, OUTPUT);
-      pinMode(YP, OUTPUT);
 
       p.y = map(pointTmp.x, TS_MINX, TS_MAXX, tft.height(), 0);
       p.x = map(pointTmp.y, TS_MINY, TS_MAXY - 60, 0, tft.width());
