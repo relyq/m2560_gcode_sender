@@ -178,9 +178,9 @@ void drawMoveScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsMove,
   tft->print(F("Y: 0.00"));
   tft->setCursor(10, 240 - ((CHARACTER_HEIGHT + 2) * 2));
   tft->print(F("Z: 0.00"));
-
-    buttonsMove[0].initButtonUL(tft, 220, 175, 100, 60, WHITE, BLACK, WHITE,
-                                "Volver", 2);
-    buttonsMove[0].drawButton();
   */
+
+  buttonsMove[0].initButtonUL(tft, 225, 60, 95, 40, WHITE, BLACK, WHITE,
+                              "Volver", 2);
+  buttonsMove[0].drawButton();
 }
