@@ -88,9 +88,14 @@ void homeController(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
     case BUTTON_DONE: {
       // send file
       drawHomeScreen(tft, buttonsHome, files[currentFile]);
+      // file is now sending
+      // this code and all other tasks will wait for it to finish sending due to
+      // lower priority & task starvation
       xQueueSend(qGcodeFile, files[currentFile], portMAX_DELAY);
+      // go zero
       xQueueSend(qGcodeLine, "G28\n", portMAX_DELAY);
 
+      // draw done screen
       tft->fillScreen(BLACK);
       tft->setTextSize(3);
       tft->setCursor((320 - (CHARACTER_WIDTH * 3 * 17)) / 2,
