@@ -1,0 +1,6 @@
+#ifndef EEPROM_THINGS_H
+#define EEPROM_THINGS_H
+
+#define EEPROMDIR_ROUTERMODE 50
+
+#endif

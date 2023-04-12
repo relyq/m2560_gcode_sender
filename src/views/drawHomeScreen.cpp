@@ -1,5 +1,7 @@
 #include "draw_screens.h"
 
+extern bool router_mode;
+
 void drawHomeScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
                     const char* currentFileName) {
   DEBUG_PRINTLN("drawing home screen");
@@ -9,10 +11,6 @@ void drawHomeScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
                             "Programas", 3);
   buttonsHome[0].drawButton();
 
-  buttonsHome[4].initButton(tft, 80, 160, 130, 40, WHITE, BLACK, WHITE, "Home",
-                            3);
-  buttonsHome[4].drawButton();
-
   buttonsHome[1].initButton(tft, 80, 70, 130, 40, WHITE, BLACK, WHITE, "Mover",
                             3);
   buttonsHome[1].drawButton();
@@ -21,17 +19,31 @@ void drawHomeScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
                             "Config", 3);
   buttonsHome[2].drawButton();
 
-  buttonsHome[5].initButton(tft, 240, 160, 130, 40, WHITE, BLACK, WHITE, "Ir 0",
-                            3);
-  buttonsHome[5].drawButton();
+  if (router_mode) {
+    buttonsHome[4].initButton(tft, 80, 160, 130, 40, WHITE, BLACK, WHITE,
+                              "Home", 3);
+    buttonsHome[4].drawButton();
 
-  buttonsHome[6].initButton(tft, 80, 115, 130, 40, WHITE, BLACK, WHITE, "Probe",
-                            3);
-  buttonsHome[6].drawButton();
+    buttonsHome[6].initButton(tft, 80, 115, 130, 40, WHITE, BLACK, WHITE,
+                              "Probe", 3);
+    buttonsHome[6].drawButton();
 
-  buttonsHome[7].initButton(tft, 240, 115, 130, 40, WHITE, BLACK, WHITE,
-                            "Set 0", 3);
-  buttonsHome[7].drawButton();
+    buttonsHome[7].initButton(tft, 240, 115, 130, 40, WHITE, BLACK, WHITE,
+                              "Set 0", 3);
+    buttonsHome[7].drawButton();
+
+    buttonsHome[5].initButton(tft, 240, 160, 130, 40, WHITE, BLACK, WHITE,
+                              "Ir 0", 3);
+    buttonsHome[5].drawButton();
+  } else {
+    buttonsHome[7].initButton(tft, 80, 115, 130, 40, WHITE, BLACK, WHITE,
+                              "Set 0", 3);
+    buttonsHome[7].drawButton();
+
+    buttonsHome[5].initButton(tft, 240, 115, 130, 40, WHITE, BLACK, WHITE,
+                              "Ir 0", 3);
+    buttonsHome[5].drawButton();
+  }
 
   if (currentFileName) {
     char buffer[MAX_FILENAME_HOME + 1];

@@ -41,6 +41,8 @@ extern uint8_t currentFile;
 extern char** files;
 extern QueueHandle_t qGcodeLine;
 
+extern bool router_mode;
+
 void moveController(Adafruit_GFX* tft, Adafruit_GFX_Button* buttonsMove,
                     Adafruit_GFX_Button* buttonsHome, const TSPoint p) {
   uint8_t pressed_button = 0xff;
@@ -84,57 +86,60 @@ void moveController(Adafruit_GFX* tft, Adafruit_GFX_Button* buttonsMove,
       move_axis(AxisDir::YP, stepsXY, feedrate);
       break;
     }
-    case BUTTON_ZN: {
-      move_axis(AxisDir::ZN, stepsZ, feedrate);
-      break;
-    }
-    case BUTTON_ZP: {
-      move_axis(AxisDir::ZP, stepsZ, feedrate);
-      break;
-    }
-    case BUTTON_ZPLUS: {
-      // z+1
-      stepsZ = stepsZ + step_multiplierZ;
-      if (stepsZ > step_multiplierZ * 9) {
-        step_multiplierZ = step_multiplierZ * 10;
-      }
-      if (stepsZ > max_stepsZ) {
-        stepsZ = max_stepsZ;
-      }
-      break;
-    }
-    case BUTTON_ZMINUS: {
-      // z-1
-      if (stepsZ > min_steps) {
-        if (stepsZ <= step_multiplierZ * 1.5) {
-          step_multiplierZ = step_multiplierZ / 10;
+      if (router_mode) {
+        case BUTTON_ZN: {
+          move_axis(AxisDir::ZN, stepsZ, feedrate);
+          break;
         }
-        stepsZ = stepsZ - step_multiplierZ;
+        case BUTTON_ZP: {
+          move_axis(AxisDir::ZP, stepsZ, feedrate);
+          break;
+        }
+        case BUTTON_ZPLUS: {
+          // z+1
+          stepsZ = stepsZ + step_multiplierZ;
+          if (stepsZ > step_multiplierZ * 9) {
+            step_multiplierZ = step_multiplierZ * 10;
+          }
+          if (stepsZ > max_stepsZ) {
+            stepsZ = max_stepsZ;
+          }
+          break;
+        }
+        case BUTTON_ZMINUS: {
+          // z-1
+          if (stepsZ > min_steps) {
+            if (stepsZ <= step_multiplierZ * 1.5) {
+              step_multiplierZ = step_multiplierZ / 10;
+            }
+            stepsZ = stepsZ - step_multiplierZ;
+          }
+          break;
+        }
+        case BUTTON_ZMULTIPLIER: {
+          // zx10
+          if (stepsZ * 10 >= max_stepsZ) {
+            stepsZ = max_stepsZ;
+            step_multiplierZ = max_multiplierZ;
+          } else {
+            stepsZ = stepsZ * 10;
+            step_multiplierZ = step_multiplierZ * 10;
+          }
+          break;
+        }
+        case BUTTON_ZDIVIDER: {
+          // z/10
+          if (stepsZ / 10 > min_steps) {
+            stepsZ = stepsZ / 10;
+            step_multiplierZ = step_multiplierZ / 10;
+          } else {
+            stepsZ = min_steps;
+            step_multiplierZ = min_steps;
+          }
+          break;
+        }
       }
-      break;
-    }
-    case BUTTON_ZMULTIPLIER: {
-      // zx10
-      if (stepsZ * 10 >= max_stepsZ) {
-        stepsZ = max_stepsZ;
-        step_multiplierZ = max_multiplierZ;
-      } else {
-        stepsZ = stepsZ * 10;
-        step_multiplierZ = step_multiplierZ * 10;
-      }
-      break;
-    }
-    case BUTTON_ZDIVIDER: {
-      // z/10
-      if (stepsZ / 10 > min_steps) {
-        stepsZ = stepsZ / 10;
-        step_multiplierZ = step_multiplierZ / 10;
-      } else {
-        stepsZ = min_steps;
-        step_multiplierZ = min_steps;
-      }
-      break;
-    }
+
     case BUTTON_UNUSED: {
       break;
     }
@@ -188,17 +193,20 @@ void moveController(Adafruit_GFX* tft, Adafruit_GFX_Button* buttonsMove,
 
   tft->setCursor(90, 140);
   tft->print(stepsXY, 2);
-  tft->setCursor(220, 140);
-  tft->print(stepsZ, 2);
 
   DEBUG_PRINT("stepxy: ");
   DEBUG_PRINTLN(stepsXY);
   DEBUG_PRINT("mult_xy: ");
   DEBUG_PRINTLN(step_multiplierXY);
-  DEBUG_PRINT("stepz: ");
-  DEBUG_PRINTLN(stepsZ);
-  DEBUG_PRINT("mult_z: ");
-  DEBUG_PRINTLN(step_multiplierZ);
+
+  if (router_mode) {
+    tft->setCursor(220, 140);
+    tft->print(stepsZ, 2);
+    DEBUG_PRINT("stepz: ");
+    DEBUG_PRINTLN(stepsZ);
+    DEBUG_PRINT("mult_z: ");
+    DEBUG_PRINTLN(step_multiplierZ);
+  }
 
   vTaskDelay(pdMS_TO_TICKS(100));
 }

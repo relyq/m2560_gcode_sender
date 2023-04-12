@@ -25,7 +25,7 @@ void taskTouchscreenMenu(void* pvParameters) {
   static Adafruit_GFX_Button buttonsHome[8];
   static Adafruit_GFX_Button buttonsMove[24];
   static Adafruit_GFX_Button buttonsSD[4];
-  static Adafruit_GFX_Button buttonsConfig[1];
+  static Adafruit_GFX_Button buttonsConfig[2];
 
   DEBUG_PRINTLN(F("Touchscreen task started."));
 
@@ -122,6 +122,6 @@ void taskTouchscreenMenu(void* pvParameters) {
         }
       }
     }
-    vTaskDelay(15 / portTICK_PERIOD_MS);
+    vTaskDelay(pdMS_TO_TICKS(50));
   }
 }

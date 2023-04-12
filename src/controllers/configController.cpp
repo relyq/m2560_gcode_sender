@@ -1,12 +1,19 @@
+#include <Arduino_FreeRTOS.h>
+#include <EEPROM.h>
+
 #include "controllers.h"
+#include "eeprom_things.h"
 
 #define BUTTON_BACK 0
-#define BUTTON_COUNT (BUTTON_BACK + 1)
+#define BUTTON_LASERROUTER 1
+#define BUTTON_COUNT (BUTTON_LASERROUTER + 1)
 
 extern Screens currentScreen;
 extern bool fileSelected;
 extern uint8_t currentFile;
 extern char** files;
+
+extern bool router_mode;
 
 void configController(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsConfig,
                       Adafruit_GFX_Button* buttonsHome, const TSPoint p) {
@@ -28,6 +35,20 @@ void configController(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsConfig,
         drawHomeScreen(tft, buttonsHome, files[currentFile]);
       }
       break;
+    }
+
+    case BUTTON_LASERROUTER: {
+      router_mode = !router_mode;
+      EEPROM.update(EEPROMDIR_ROUTERMODE, router_mode);
+
+      if (router_mode) {
+        tft->fillCircle((320 / 2) - 17, 40, 14, BLACK);
+        tft->fillCircle((320 / 2) + 17, 40, 14, GREEN);
+      } else {
+        tft->fillCircle((320 / 2) - 17, 40, 14, GREEN);
+        tft->fillCircle((320 / 2) + 17, 40, 14, BLACK);
+      }
+      vTaskDelay(pdMS_TO_TICKS(150));
     }
 
     default:

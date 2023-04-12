@@ -1,6 +1,8 @@
 #include <Arduino.h>
 
-#define VERSION "0.9.2"
+#define VERSION "0.9.4"
+
+#include <EEPROM.h>
 
 #include "Arduino_FreeRTOS.h"
 #include "DEBUG_things.h"
@@ -8,6 +10,7 @@
 #include "SPI.h"
 #include "SdFat.h"
 #include "common_defs.h"
+#include "eeprom_things.h"
 #include "queue.h"
 #include "task.h"
 #include "tasks/gcode_tasks.h"
@@ -19,6 +22,8 @@ File root;
 char** files;
 uint8_t filecount;
 
+bool router_mode = 0;
+
 QueueHandle_t qGcodeLine;
 QueueHandle_t qGcodeFile;
 QueueHandle_t qMachineStatus;
@@ -28,6 +33,11 @@ TaskHandle_t hTouchscreenMenu;
 TaskHandle_t hGetStatus;
 TaskHandle_t hSendGcodeFile;
 TaskHandle_t hSendGcodeLine;
+
+// EEPROM
+/*
+ 50 - laser-router mode
+*/
 
 void setup() {
   Serial.begin(115200);
@@ -43,6 +53,8 @@ void setup() {
     while (1)
       ;
   }
+
+  router_mode = EEPROM.read(EEPROMDIR_ROUTERMODE);
 
   root = SD.open("/");
   SD.ls(LS_A | LS_DATE | LS_SIZE | LS_R);

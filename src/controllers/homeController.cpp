@@ -25,6 +25,8 @@ extern QueueHandle_t qGcodeFile;
 extern double stepsXY;
 extern double stepsZ;
 
+extern bool router_mode;
+
 void homeController(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
                     Adafruit_GFX_Button* buttonsSD,
                     Adafruit_GFX_Button* buttonsMove,
@@ -56,12 +58,6 @@ void homeController(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
       drawConfigScreen(tft, buttonsConfig);
       break;
     }
-    case BUTTON_HOMING: {
-      // homing
-      xQueueSend(qGcodeLine, "$H\n", portMAX_DELAY);
-      vTaskDelay(500 / portTICK_PERIOD_MS);
-      break;
-    }
     case BUTTON_GOZERO: {
       // go to zero
       // xQueueSend(qGcodeLine, "G28G91X0Y0Z0\n", portMAX_DELAY); // esto
@@ -73,12 +69,20 @@ void homeController(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
       vTaskDelay(500 / portTICK_PERIOD_MS);
       break;
     }
-    case BUTTON_PROBE: {
-      // probe
-      xQueueSend(qGcodeLine, "G38.3Z-25F30.0\n", portMAX_DELAY);
-      vTaskDelay(500 / portTICK_PERIOD_MS);
-      break;
-    }
+      if (router_mode) {
+        case BUTTON_HOMING: {
+          // homing
+          xQueueSend(qGcodeLine, "$H\n", portMAX_DELAY);
+          vTaskDelay(500 / portTICK_PERIOD_MS);
+          break;
+        }
+        case BUTTON_PROBE: {
+          // probe
+          xQueueSend(qGcodeLine, "G38.3Z-25F30.0\n", portMAX_DELAY);
+          vTaskDelay(500 / portTICK_PERIOD_MS);
+          break;
+        }
+      }
     case BUTTON_SETZERO: {
       // set zero
       xQueueSend(qGcodeLine, "G10L20P1X0Y0Z0\n", portMAX_DELAY);
