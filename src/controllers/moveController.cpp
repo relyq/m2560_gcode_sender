@@ -56,7 +56,7 @@ void moveController(Adafruit_GFX* tft, Adafruit_GFX_Button* buttonsMove,
 
   uint16_t feedrate = 200;
 
-  tft->setTextColor(WHITE, BLACK);
+  tft->setTextColor(WHITE, THEME_BACKGROUND);
 
   switch (pressed_button) {
     case BUTTON_BACK: {

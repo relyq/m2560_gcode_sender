@@ -5,9 +5,9 @@ extern bool router_mode;
 void drawMoveScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsMove,
                     double stepsXY, double stepsZ) {
   DEBUG_PRINTLN("drawing move screen");
-  tft->fillScreen(BLACK);
+  tft->fillScreen(THEME_BACKGROUND);
   tft->setTextSize(2);
-  tft->setTextColor(WHITE, BLACK);
+  tft->setTextColor(WHITE, THEME_BACKGROUND);
 
   uint8_t pepeglad = 0;
 

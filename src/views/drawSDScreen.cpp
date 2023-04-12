@@ -4,10 +4,10 @@ void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
                   uint8_t filecount, char** filenames,
                   const uint8_t currentFile) {
   DEBUG_PRINTLN("drawing file explorer");
-  tft->fillScreen(BLACK);
+  tft->fillScreen(THEME_BACKGROUND);
 
   tft->setTextSize(2);
-  tft->setTextColor(WHITE, BLACK);
+  tft->setTextColor(WHITE, THEME_BACKGROUND);
   tft->setCursor(0, 0);
   tft->print("Tarjeta SD");
 

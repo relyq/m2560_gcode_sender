@@ -3,6 +3,7 @@
 
 #include "common_defs.h"
 
+#define THEME_BACKGROUND ORANGE
 #define THEME_PRIMARY PURPLE
 #define THEME_ACCENT DARKCYAN
 

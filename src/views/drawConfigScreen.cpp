@@ -5,10 +5,10 @@ extern bool router_mode;
 void drawConfigScreen(Adafruit_TFTLCD* tft,
                       Adafruit_GFX_Button* buttonsConfig) {
   DEBUG_PRINTLN("drawing config screen");
-  tft->fillScreen(BLACK);
+  tft->fillScreen(THEME_BACKGROUND);
 
   tft->setTextSize(BUTTON_TEXTSIZE);
-  tft->setTextColor(WHITE, BLACK);
+  tft->setTextColor(WHITE, THEME_BACKGROUND);
 
   tft->setCursor(20, 30);
   tft->print("Laser");

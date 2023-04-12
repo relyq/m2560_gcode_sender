@@ -70,7 +70,7 @@ void taskTouchscreenMenu(void* pvParameters) {
   tft.begin(lcd_id);
   tft.setRotation(lcd_rotation);
 
-  tft.fillScreen(BLACK);
+  tft.fillScreen(THEME_BACKGROUND);
 
   currentScreen = Screens::Home;
   drawHomeScreen(&tft, buttonsHome, NULL);

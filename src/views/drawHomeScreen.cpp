@@ -5,7 +5,7 @@ extern bool router_mode;
 void drawHomeScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
                     const char* currentFileName) {
   DEBUG_PRINTLN("drawing home screen");
-  tft->fillScreen(BLACK);
+  tft->fillScreen(THEME_BACKGROUND);
 
   buttonsHome[0].initButton(tft, 160, 25, 230, 40, WHITE, THEME_PRIMARY, WHITE,
                             "Programas", 3);
