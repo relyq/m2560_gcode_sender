@@ -87,6 +87,16 @@ void drawMoveScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsMove,
 
     // las flechas ocupan 130x130px y 35x130px
 
+    tft->setCursor(
+        centerX_z - halfside - (2 * CHARACTER_WIDTH * TITLE_TEXTSIZE) + 5,
+        centerY - halfside - 35 - offset);
+    tft->print("z+");
+
+    tft->setCursor(
+        centerX_z - halfside - (2 * CHARACTER_WIDTH * TITLE_TEXTSIZE) + 5,
+        centerY + halfside + 35 + offset - (CHARACTER_HEIGHT * TITLE_TEXTSIZE));
+    tft->print("z-");
+
     // z+
     buttonsMove[5].initButtonUL(tft, centerX_z - halfside,
                                 centerY - halfside - 35 - offset, halfside * 2,
@@ -157,6 +167,17 @@ void drawMoveScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsMove,
   */
 
   // las flechas ocupan 130x130px y 35x130px
+
+  tft->setCursor(
+      centerX - halfside - (2 * CHARACTER_WIDTH * TITLE_TEXTSIZE) + 5,
+      centerY - halfside - 35 - offset);
+  tft->print("y+");
+
+  tft->setCursor(
+      centerX - halfside - (2 * CHARACTER_WIDTH * TITLE_TEXTSIZE) + 5,
+      centerY + halfside + 35 + offset - (CHARACTER_HEIGHT * TITLE_TEXTSIZE));
+  tft->print("y-");
+
   // y+
   buttonsMove[1].initButtonUL(tft, centerX - halfside,
                               centerY - halfside - 35 - offset, halfside * 2,
@@ -171,6 +192,15 @@ void drawMoveScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsMove,
   tft->drawTriangle(centerX - halfside, centerY + halfside + offset,
                     centerX + halfside, centerY + halfside + offset, centerX,
                     centerY + halfside + 35 + offset, WHITE);
+
+  tft->setCursor(centerX + halfside + 35 + offset -
+                     (2 * CHARACTER_WIDTH * TITLE_TEXTSIZE) + 10,
+                 centerY - halfside - 10);
+  tft->print("x+");
+
+  tft->setCursor(centerX - halfside - 35 - offset, centerY - halfside - 10);
+  tft->print("x-");
+
   // x+
   buttonsMove[3].initButtonUL(tft, centerX + halfside + offset,
                               centerY - halfside, 35, halfside * 2, RED, RED,
