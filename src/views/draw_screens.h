@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "DEBUG_things.h"
+#include "color_theme.h"
 #include "common_defs.h"
 #include "src/Adafruit_TFTLCD.h"
 

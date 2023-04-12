@@ -2,6 +2,7 @@
 #define __CONTROLLERS_H__
 
 #include "DEBUG_things.h"
+#include "color_theme.h"
 #include "common_defs.h"
 #include "src/Adafruit_TFTLCD.h"
 #include "src/TouchScreen.h"

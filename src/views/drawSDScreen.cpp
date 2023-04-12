@@ -51,9 +51,11 @@ void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
       strncpy(buffer, filenames[i], MAX_FILENAME_SD);
       tft->print(buffer);
     }
-    buttonsSD[2].initButton(tft, 255, 175, 40, 40, WHITE, BLACK, WHITE, "<", 3);
+    buttonsSD[2].initButton(tft, 255, 175, 40, 40, WHITE, THEME_ACCENT, WHITE,
+                            "<", 3);
     buttonsSD[2].drawButton();
-    buttonsSD[3].initButton(tft, 300, 175, 40, 40, WHITE, BLACK, WHITE, ">", 3);
+    buttonsSD[3].initButton(tft, 300, 175, 40, 40, WHITE, THEME_ACCENT, WHITE,
+                            ">", 3);
     buttonsSD[3].drawButton();
   } else {
     // need file offset so index still corresponds to file array every page
@@ -69,10 +71,10 @@ void drawSDScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsSD,
     }
   }
 
-  buttonsSD[0].initButton(tft, 80, 220, 160, 40, WHITE, BLACK, WHITE, "Volver",
-                          3);
+  buttonsSD[0].initButton(tft, 80, 220, 160, 40, WHITE, THEME_ACCENT, WHITE,
+                          "Volver", 3);
   buttonsSD[0].drawButton();
 
-  buttonsSD[1].initButton(tft, 240, 220, 160, 40, WHITE, BLACK, WHITE,
+  buttonsSD[1].initButton(tft, 240, 220, 160, 40, WHITE, THEME_PRIMARY, WHITE,
                           "Aceptar", 3);
 }

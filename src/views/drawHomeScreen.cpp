@@ -7,41 +7,41 @@ void drawHomeScreen(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsHome,
   DEBUG_PRINTLN("drawing home screen");
   tft->fillScreen(BLACK);
 
-  buttonsHome[0].initButton(tft, 160, 25, 230, 40, WHITE, BLACK, WHITE,
+  buttonsHome[0].initButton(tft, 160, 25, 230, 40, WHITE, THEME_PRIMARY, WHITE,
                             "Programas", 3);
   buttonsHome[0].drawButton();
 
-  buttonsHome[1].initButton(tft, 80, 70, 130, 40, WHITE, BLACK, WHITE, "Mover",
-                            3);
+  buttonsHome[1].initButton(tft, 80, 70, 130, 40, WHITE, THEME_PRIMARY, WHITE,
+                            "Mover", 3);
   buttonsHome[1].drawButton();
 
-  buttonsHome[2].initButton(tft, 240, 70, 130, 40, WHITE, BLACK, WHITE,
+  buttonsHome[2].initButton(tft, 240, 70, 130, 40, WHITE, THEME_PRIMARY, WHITE,
                             "Config", 3);
   buttonsHome[2].drawButton();
 
   if (router_mode) {
-    buttonsHome[4].initButton(tft, 80, 160, 130, 40, WHITE, BLACK, WHITE,
-                              "Home", 3);
+    buttonsHome[4].initButton(tft, 80, 160, 130, 40, WHITE, THEME_PRIMARY,
+                              WHITE, "Home", 3);
     buttonsHome[4].drawButton();
 
-    buttonsHome[6].initButton(tft, 80, 115, 130, 40, WHITE, BLACK, WHITE,
-                              "Probe", 3);
+    buttonsHome[6].initButton(tft, 80, 115, 130, 40, WHITE, THEME_PRIMARY,
+                              WHITE, "Probe", 3);
     buttonsHome[6].drawButton();
 
-    buttonsHome[7].initButton(tft, 240, 115, 130, 40, WHITE, BLACK, WHITE,
-                              "Set 0", 3);
+    buttonsHome[7].initButton(tft, 240, 115, 130, 40, WHITE, THEME_PRIMARY,
+                              WHITE, "Set 0", 3);
     buttonsHome[7].drawButton();
 
-    buttonsHome[5].initButton(tft, 240, 160, 130, 40, WHITE, BLACK, WHITE,
-                              "Ir 0", 3);
+    buttonsHome[5].initButton(tft, 240, 160, 130, 40, WHITE, THEME_PRIMARY,
+                              WHITE, "Ir 0", 3);
     buttonsHome[5].drawButton();
   } else {
-    buttonsHome[7].initButton(tft, 80, 115, 130, 40, WHITE, BLACK, WHITE,
-                              "Set 0", 3);
+    buttonsHome[7].initButton(tft, 80, 115, 130, 40, WHITE, THEME_PRIMARY,
+                              WHITE, "Set 0", 3);
     buttonsHome[7].drawButton();
 
-    buttonsHome[5].initButton(tft, 240, 115, 130, 40, WHITE, BLACK, WHITE,
-                              "Ir 0", 3);
+    buttonsHome[5].initButton(tft, 240, 115, 130, 40, WHITE, THEME_PRIMARY,
+                              WHITE, "Ir 0", 3);
     buttonsHome[5].drawButton();
   }
 
