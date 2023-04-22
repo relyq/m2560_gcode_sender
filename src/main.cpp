@@ -94,6 +94,9 @@ void setup() {
               configMAX_PRIORITIES - 1, &hGetStatus);
   xTaskCreate(taskStackMonitor, "Stack_Monitor", configMINIMAL_STACK_SIZE, NULL,
               configMAX_PRIORITIES - 1, NULL);
+
+  // clear alarm
+  Serial1.println("$X");
 }
 
 void loop() {}
