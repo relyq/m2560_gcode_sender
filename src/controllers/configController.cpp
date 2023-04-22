@@ -43,9 +43,9 @@ void configController(Adafruit_TFTLCD* tft, Adafruit_GFX_Button* buttonsConfig,
 
       if (router_mode) {
         tft->fillCircle((320 / 2) - 17, 40, 14, BLACK);
-        tft->fillCircle((320 / 2) + 17, 40, 14, THEME_PRIMARY);
+        tft->fillCircle((320 / 2) + 17, 40, 14, GREEN);
       } else {
-        tft->fillCircle((320 / 2) - 17, 40, 14, THEME_PRIMARY);
+        tft->fillCircle((320 / 2) - 17, 40, 14, GREEN);
         tft->fillCircle((320 / 2) + 17, 40, 14, BLACK);
       }
       vTaskDelay(pdMS_TO_TICKS(150));

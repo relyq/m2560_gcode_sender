@@ -25,9 +25,9 @@ void drawConfigScreen(Adafruit_TFTLCD* tft,
 
   if (router_mode) {
     tft->fillCircle((320 / 2) - 17, 40, 14, BLACK);
-    tft->fillCircle((320 / 2) + 17, 40, 14, THEME_PRIMARY);
+    tft->fillCircle((320 / 2) + 17, 40, 14, GREEN);
   } else {
-    tft->fillCircle((320 / 2) - 17, 40, 14, THEME_PRIMARY);
+    tft->fillCircle((320 / 2) - 17, 40, 14, GREEN);
     tft->fillCircle((320 / 2) + 17, 40, 14, BLACK);
   }
 
